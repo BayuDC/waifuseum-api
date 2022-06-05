@@ -1,0 +1,25 @@
+{
+  "name": "waifuseum-api",
+  "version": "3.0.0",
+  "description": "API for storing and managing anime picture collection in Discord server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node -r dotenv/config index.js"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "repository": "https://github.com/BayuDC/waifuseum-rewrite.git",
+  "author": "BayuDC <dev.bayudc@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "http-errors": "^2.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.1"
+  }
+}
