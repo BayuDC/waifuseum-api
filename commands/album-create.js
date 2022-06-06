@@ -6,7 +6,7 @@ module.exports = {
     async execute(message, name) {
         if (!name) return await message.channel.send('Album name is required.');
 
-        const album = await Album.findOne({ name });
+        const album = await Album.findOne({ slug: name });
 
         if (album) return await message.channel.send(`Album **${name}** already exists.`);
 

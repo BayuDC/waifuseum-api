@@ -8,7 +8,7 @@ module.exports = {
         if (!key) return await message.channel.send('Album key is required.');
         if (!value) return await message.channel.send('Album value is required.');
 
-        const album = await Album.findOne({ name });
+        const album = await Album.findOne({ slug: name });
         if (!album) return await message.channel.send(`Album **${name}** does not exist.`);
 
         album[key] = value;
