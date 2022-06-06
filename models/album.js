@@ -6,4 +6,4 @@ const schema = new mongoose.Schema({
     channelId: { type: String, required: true },
 });
 
-module.exports = mongoose.model(schema);
+module.exports = mongoose.model('Album', schema);
