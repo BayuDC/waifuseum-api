@@ -1,5 +1,6 @@
 const { readdirSync } = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
+const Album = require('../models/album');
 
 const prefix = process.env.BOT_PREFIX || '!';
 const token = process.env.BOT_TOKEN;
@@ -9,6 +10,8 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.albumChannels = new Collection();
+
 readdirSync('./commands').forEach(file => {
     const command = require(`../commands/` + file);
     client.commands.set(command.name, command);
@@ -33,6 +36,14 @@ client.on('messageCreate', async message => {
 module.exports = next => {
     client.once('ready', () => {
         console.log('Discord bot is ready!');
+
+        Album.find().then(albums => {
+            albums.forEach(album => {
+                client.channels.fetch(album.channelId).then(channel => {
+                    client.albumChannels.set(album.slug, channel);
+                });
+            });
+        });
 
         next(client);
     });

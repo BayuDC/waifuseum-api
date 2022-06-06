@@ -14,6 +14,7 @@ module.exports = {
         await channel.setParent(message.channel.parent);
 
         await Album.create({ name, slug: name, channelId: channel.id });
+        message.client.albumChannels.set(name, channel);
 
         await message.channel.send(`Album **${name}** created at ${channel.toString()}.`);
     },

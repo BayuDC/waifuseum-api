@@ -14,6 +14,7 @@ module.exports = {
         await channel.delete();
 
         await Album.deleteOne(album);
+        message.client.albumChannels.delete(name);
 
         await message.channel.send(`Album **${name}** successfully deleted.`);
     },
