@@ -5,6 +5,10 @@ module.exports = {
     name: 'config',
     /** @param {import('discord.js').Message} message */
     async execute(message, key, value) {
+        if (!key) {
+            return message.channel.send(`The current configuration is: \`\`\`${JSON.stringify(config, null, 4)}\`\`\``);
+        }
+
         switch (key) {
             case 'server':
                 config.server = value;
