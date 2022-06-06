@@ -7,8 +7,7 @@ module.exports = {
     async execute(message, key, value) {
         switch (key) {
             case 'server':
-            case 'serverId':
-                config.serverId = value;
+                config.server = value;
                 break;
         }
 
