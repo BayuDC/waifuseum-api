@@ -23,6 +23,9 @@ module.exports = {
             case 'slug':
                 value = value[0];
 
+                if (album.slug != value && (await Album.findOne({ slug: value })))
+                    return await message.channel.send(`Album with slug **${value}** already exists.`);
+
                 await Album.updateOne(album, { slug: value });
                 await channel.setName(value);
 
