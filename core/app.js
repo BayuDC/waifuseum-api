@@ -17,4 +17,10 @@ app.use('/', require('../routes/main'));
 app.use(error.notFound);
 app.use(error.handle);
 
-app.listen(port, () => console.log('App running at port', port));
+module.exports = bot => {
+    app.listen(port, () => {
+        console.log('App running at port', port);
+
+        app.bot = bot;
+    });
+};

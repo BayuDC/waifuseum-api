@@ -30,8 +30,12 @@ client.on('messageCreate', async message => {
     }
 });
 
-client.once('ready', () => {
-    console.log('Bot is ready!');
-});
+module.exports = next => {
+    client.once('ready', () => {
+        console.log('Discord bot is ready!');
 
-client.login(token);
+        next(client);
+    });
+
+    client.login(token);
+};

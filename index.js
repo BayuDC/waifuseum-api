@@ -1,3 +1,5 @@
-require('./core/app');
-require('./core/bot');
-require('./core/db');
+require('./core/db')(() => {
+    require('./core/bot')(bot => {
+        require('./core/app')(bot);
+    });
+});
