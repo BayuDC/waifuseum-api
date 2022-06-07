@@ -22,6 +22,6 @@ module.exports = bot => {
     app.listen(port, () => {
         console.log('App running at port', port);
 
-        app.bot = bot;
+        app.albumChannels = bot.albumChannels;
     });
 };
