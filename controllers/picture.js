@@ -29,7 +29,7 @@ module.exports = {
 
         const pictures = await Picture.findRandom({ count, full, album });
 
-        res.json(pictures);
+        res.json({ pictures });
     },
     /**
      * @param {import('express').Request} req
@@ -41,7 +41,7 @@ module.exports = {
 
         const pictures = await Picture.findAll({ full, album });
 
-        res.json(pictures);
+        res.json({ pictures });
     },
     /**
      * @param {import('express').Request} req

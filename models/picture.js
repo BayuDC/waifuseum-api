@@ -26,15 +26,20 @@ schema.static('findRandom', async function ({ count, full, album }) {
         .match({ album: album._id })
         .sample(count || 1)
         .project({
-            ...{ id: '$_id', url: true, source: true, _id: false },
+            ...{ url: true, source: true, _id: true },
             ...(full ? { album: true } : {}),
         });
 
     if (full) {
-        await this.populate(pictures, { path: 'album', select: 'name slug -_id' });
+        await this.populate(pictures, { path: 'album' });
     }
 
-    return pictures;
+    return pictures.map(picture => ({
+        ...{ id: picture._id, url: picture.url, source: picture.source },
+        ...(picture.album
+            ? { album: { id: picture.album._id, name: picture.album.name, slug: picture.album.slug } }
+            : {}),
+    }));
 });
 schema.static('findAll', async function ({ album, full }) {
     const pictures = await this.find({ album: album?._id }, full ? {} : { album: false });
@@ -48,15 +53,7 @@ schema.static('findAll', async function ({ album, full }) {
 schema.method('toJSON', function () {
     return {
         ...{ id: this._id, url: this.url, source: this.source },
-        ...(this.album
-            ? {
-                  album: {
-                      id: this.album.id,
-                      name: this.album.name,
-                      slug: this.album.slug,
-                  },
-              }
-            : {}),
+        ...(this.album ? { album: this.album.toJSON() } : {}),
     };
 });
 
