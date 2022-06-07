@@ -6,6 +6,23 @@ module.exports = {
      * @param {import('express').Request} req
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
+     * @param {String} id
+     */
+    async load(req, res, next, id) {
+        try {
+            const picture = await Picture.findById(id);
+            if (!picture) throw undefined;
+
+            req.picture = picture;
+            next();
+        } catch {
+            next(createError(404, 'Picture not found'));
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
         const { body, file } = req;
@@ -28,5 +45,16 @@ module.exports = {
         } finally {
             file?.destroy();
         }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async show(req, res, next) {
+        const picture = req.picture;
+        await picture.populate('album');
+
+        res.json({ picture: picture.toJSON() });
     },
 };
