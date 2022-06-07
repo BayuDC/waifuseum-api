@@ -1,9 +1,8 @@
 const { body, check } = require('express-validator');
 const { isMongoId } = require('validator').default;
 const Album = require('../models/album');
-const validate = require('./_');
 
-module.exports = validate([
+module.exports = [
     body('source')
         .if(body('source').notEmpty())
         .isURL({ protocols: ['http', 'https'] })
@@ -30,4 +29,4 @@ module.exports = validate([
                 .customSanitizer(value => album)
                 .run(req);
         }),
-]);
+];
