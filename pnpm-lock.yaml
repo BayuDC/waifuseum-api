@@ -7,6 +7,7 @@ specifiers:
   discord.js: ^13.8.0
   dotenv: ^16.0.1
   express: ^4.18.1
+  express-validator: ^6.14.1
   http-errors: ^2.0.0
   mongoose: ^6.3.5
   multer: 1.4.5-lts.1
@@ -18,6 +19,7 @@ dependencies:
   cors: 2.8.5
   discord.js: 13.8.0
   express: 4.18.1
+  express-validator: 6.14.1
   http-errors: 2.0.0
   mongoose: 6.3.5
   multer: 1.4.5-lts.1
@@ -330,6 +332,14 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
+  /express-validator/6.14.1:
+    resolution: {integrity: sha512-4w7gn/jPW1a+r833xBqpu4pL7XiiScDwlbBIMtiqUEt/MVNqR94HOHyKLcCtnqCnEPiqrX1Mqt9l/SVN/iqeLA==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      lodash: 4.17.21
+      validator: 13.7.0
+    dev: false
+
   /express/4.18.1:
     resolution: {integrity: sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q==}
     engines: {node: '>= 0.10.0'}
@@ -491,6 +501,10 @@ packages:
 
   /kareem/2.3.5:
     resolution: {integrity: sha512-qxCyQtp3ioawkiRNQr/v8xw9KIviMSSNmy+63Wubj7KmMn3g7noRXIZB4vPCAP+ETi2SR8eH6CvmlKZuGpoHOg==}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /media-typer/0.3.0:
