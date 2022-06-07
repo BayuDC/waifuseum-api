@@ -5,10 +5,20 @@ const createError = require('http-errors');
 const formats = { 'image/jpeg': 'jpg', 'image/png': 'png' };
 
 const handleError = (err, next) => {
-    if (err.code == 'LIMIT_FILE_SIZE') return next(createError(413, 'File too large'));
-    if (err.code == 'NOT_AN_IMAGE') return next(createError(415, 'File is not an image'));
+    const httpError = createError(422, 'Unprocessable file');
 
-    next(createError(422, 'Unprocessable file'));
+    switch (err.code) {
+        case 'LIMIT_FILE_SIZE':
+            httpError.statusCode = 413;
+            httpError.details = { file: 'File is too big' };
+            break;
+        case 'NOT_AN_IMAGE':
+            httpError.statusCode = 415;
+            httpError.details = { file: 'File is not an image' };
+            break;
+    }
+
+    next(httpError);
 };
 
 module.exports = {
