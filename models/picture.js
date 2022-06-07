@@ -36,16 +36,27 @@ schema.static('findRandom', async function ({ count, full, album }) {
 
     return pictures;
 });
+schema.static('findAll', async function ({ album, full }) {
+    const pictures = await this.find({ album: album?._id }, full ? {} : { album: false });
+
+    if (full) {
+        await this.populate(pictures, { path: 'album' });
+    }
+
+    return pictures;
+});
 schema.method('toJSON', function () {
     return {
-        id: this._id,
-        url: this.url,
-        source: this.source,
-        album: {
-            id: this.album.id,
-            name: this.album.name,
-            slug: this.album.slug,
-        },
+        ...{ id: this._id, url: this.url, source: this.source },
+        ...(this.album
+            ? {
+                  album: {
+                      id: this.album.id,
+                      name: this.album.name,
+                      slug: this.album.slug,
+                  },
+              }
+            : {}),
     };
 });
 

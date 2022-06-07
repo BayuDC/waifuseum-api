@@ -29,6 +29,31 @@ module.exports = {
                     .run(req);
             }),
     ],
+    indexAll: [
+        query('full')
+            .if(query('full').exists())
+            .customSanitizer(() => true),
+        query('album')
+            .if(query('album').exists())
+            .custom(async (value, { req }) => {
+                const isId = isMongoId(value);
+
+                const album = await Album.findOne(
+                    isId
+                        ? { _id: value }
+                        : {
+                              $or: [{ name: value }, { slug: value }],
+                          }
+                );
+                if (!album) {
+                    throw Error('Album does not exist');
+                }
+
+                check('album')
+                    .customSanitizer(() => album)
+                    .run(req);
+            }),
+    ],
     store: [
         body('source')
             .if(body('source').notEmpty())

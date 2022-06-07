@@ -7,12 +7,8 @@ const pictureValidation = require('../validations/picture');
 
 router.param('id', pictureController.load);
 
-router.get('/', [
-    validate(pictureValidation.index),
-    pictureController.index,
-    // !
-]);
-router.get('/all');
+router.get('/', validate(pictureValidation.index), pictureController.index);
+router.get('/all', validate(pictureValidation.indexAll), pictureController.indexAll);
 router.get('/:id', pictureController.show);
 router.post('/', [
     pictureMiddleware.upload,
