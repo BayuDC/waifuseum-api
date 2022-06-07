@@ -13,7 +13,7 @@ router.get('/:id', pictureController.show);
 router.post('/', [
     pictureMiddleware.upload,
     pictureMiddleware.download,
-    validate(pictureValidation),
+    validate(pictureValidation.store),
     pictureController.store,
 ]);
 

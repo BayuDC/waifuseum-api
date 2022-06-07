@@ -24,6 +24,17 @@ module.exports = {
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
      */
+    async show(req, res, next) {
+        const picture = req.picture;
+        await picture.populate('album');
+
+        res.json({ picture: picture.toJSON() });
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
     async store(req, res, next) {
         const { body, file } = req;
         const { album, source } = body;
@@ -45,16 +56,5 @@ module.exports = {
         } finally {
             file?.destroy();
         }
-    },
-    /**
-     * @param {import('express').Request} req
-     * @param {import('express').Response} res
-     * @param {import('express').NextFunction} next
-     */
-    async show(req, res, next) {
-        const picture = req.picture;
-        await picture.populate('album');
-
-        res.json({ picture: picture.toJSON() });
     },
 };
