@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
     source: { type: String, required: false },
     messageId: { type: String, required: true },
     album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
+    createdAt: { type: Date, default: Date.now },
 });
 
 schema.static('createAndUpload', async function (channel, { file, album, source }) {
