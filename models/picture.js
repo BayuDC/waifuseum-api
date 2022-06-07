@@ -21,6 +21,21 @@ schema.static('createAndUpload', async function (channel, { file, album, source 
 
     return picture;
 });
+schema.static('findRandom', async function ({ count, full, album }) {
+    const pictures = await this.aggregate()
+        .match({ album: album._id })
+        .sample(count || 1)
+        .project({
+            ...{ id: '$_id', url: true, source: true, _id: false },
+            ...(full ? { album: true } : {}),
+        });
+
+    if (full) {
+        await this.populate(pictures, { path: 'album', select: 'name slug -_id' });
+    }
+
+    return pictures;
+});
 schema.method('toJSON', function () {
     return {
         id: this._id,

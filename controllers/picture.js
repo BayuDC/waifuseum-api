@@ -24,6 +24,18 @@ module.exports = {
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
      */
+    async index(req, res, next) {
+        const { count, full, album } = req.query;
+
+        const pictures = await Picture.findRandom({ count, full, album });
+
+        res.json(pictures);
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
     async show(req, res, next) {
         const picture = req.picture;
         await picture.populate('album');

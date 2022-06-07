@@ -1,8 +1,34 @@
-const { body, check } = require('express-validator');
+const { body, query, check } = require('express-validator');
 const { isMongoId } = require('validator').default;
 const Album = require('../models/album');
 
 module.exports = {
+    index: [
+        query('count').toInt(),
+        query('full')
+            .if(query('full').exists())
+            .customSanitizer(() => true),
+        query('album')
+            .if(query('album').exists())
+            .custom(async (value, { req }) => {
+                const isId = isMongoId(value);
+
+                const album = await Album.findOne(
+                    isId
+                        ? { _id: value }
+                        : {
+                              $or: [{ name: value }, { slug: value }],
+                          }
+                );
+                if (!album) {
+                    throw Error('Album does not exist');
+                }
+
+                check('album')
+                    .customSanitizer(() => album)
+                    .run(req);
+            }),
+    ],
     store: [
         body('source')
             .if(body('source').notEmpty())
@@ -27,7 +53,7 @@ module.exports = {
                 }
 
                 check('album')
-                    .customSanitizer(value => album)
+                    .customSanitizer(() => album)
                     .run(req);
             }),
     ],
