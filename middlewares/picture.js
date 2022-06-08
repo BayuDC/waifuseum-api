@@ -72,10 +72,10 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     download(req, res, next) {
-        if (req.file) return next();
+        const url = req.body.fileUrl;
 
         try {
-            const url = req.body.fileUrl;
+            if (req.file || !url) return next();
             if (!isURL(url, { protocols: ['http', 'https'] })) {
                 throw { code: 'NOT_VALID_URL' };
             }

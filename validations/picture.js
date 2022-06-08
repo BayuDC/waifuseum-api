@@ -30,5 +30,9 @@ module.exports = {
             .isURL({ protocols: ['http', 'https'] })
             .withMessage('Url is not valid'),
         body('album').exists().withMessage('Album name or id is required').bail().custom(validateAlbum),
+        body('file').custom((_, { req }) => {
+            if (!req.file) throw new Error('Picture file is required');
+            return true;
+        }),
     ],
 };

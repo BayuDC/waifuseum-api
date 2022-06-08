@@ -81,4 +81,15 @@ module.exports = {
             file?.destroy();
         }
     },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async update(req, res, next) {
+        const { body, file, picture } = req;
+        const { album, source } = body;
+
+        res.send();
+    },
 };

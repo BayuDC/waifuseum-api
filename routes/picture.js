@@ -16,5 +16,10 @@ router.post('/', [
     validate(pictureValidation.store),
     pictureController.store,
 ]);
+router.put('/:id', [
+    pictureMiddleware.upload,
+    pictureMiddleware.download,
+    //
+]);
 
 module.exports = router;
