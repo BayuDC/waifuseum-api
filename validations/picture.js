@@ -35,4 +35,11 @@ module.exports = {
             return true;
         }),
     ],
+    update: [
+        body('album').if(body('album').exists()).custom(validateAlbum),
+        body('source')
+            .if(body('source').notEmpty())
+            .isURL({ protocols: ['http', 'https'] })
+            .withMessage('Url is not valid'),
+    ],
 };

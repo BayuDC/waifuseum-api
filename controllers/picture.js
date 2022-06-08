@@ -87,9 +87,32 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
-        const { body, file, picture } = req;
+        const { body, file } = req;
         const { album, source } = body;
+        let { picture } = req;
 
-        res.send();
+        try {
+            await picture.populate('album');
+
+            if (album || file) {
+                const channel = req.app.albumChannels.get(album?.slug || picture.album.slug);
+                const message = await (album ? req.app.albumChannels.get(picture.album.slug) : channel).messages
+                    .fetch(picture.messageId)
+                    .catch(() => {});
+
+                await picture.updateFile(channel, { file, album });
+                await message?.delete();
+            }
+
+            await picture.update({ source });
+
+            res.json({ picture: picture.toJSON() });
+        } catch (err) {
+            if (err.name == 'AbortError') return next(createError(422, 'Unprocessable file'));
+
+            next(err);
+        } finally {
+            file?.destroy();
+        }
     },
 };

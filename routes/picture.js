@@ -19,7 +19,8 @@ router.post('/', [
 router.put('/:id', [
     pictureMiddleware.upload,
     pictureMiddleware.download,
-    //
+    validate(pictureValidation.update),
+    pictureController.update,
 ]);
 
 module.exports = router;
