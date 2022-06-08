@@ -13,6 +13,7 @@ module.exports = {
             const picture = await Picture.findById(id);
             if (!picture) throw undefined;
 
+            await picture.populate('album');
             req.picture = picture;
             next();
         } catch {
@@ -50,7 +51,6 @@ module.exports = {
      */
     async show(req, res, next) {
         const picture = req.picture;
-        await picture.populate('album');
 
         res.json({ picture: picture.toJSON() });
     },
@@ -79,6 +79,57 @@ module.exports = {
             next(createError(400, 'Unknown error'));
         } finally {
             file?.destroy();
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async update(req, res, next) {
+        const { body, file, picture } = req;
+        const { album, source } = body;
+
+        try {
+            if (album || file) {
+                const channel = req.app.albumChannels.get(album?.slug || picture.album.slug);
+                const message = await (album ? req.app.albumChannels.get(picture.album.slug) : channel).messages
+                    .fetch(picture.messageId)
+                    .catch(() => {});
+
+                await picture.updateFile(channel, { file, album });
+                await message?.delete();
+            }
+
+            await picture.update({ source });
+
+            res.json({ picture: picture.toJSON() });
+        } catch (err) {
+            if (err.name == 'AbortError') return next(createError(422, 'Unprocessable file'));
+
+            next(err);
+        } finally {
+            file?.destroy();
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async destroy(req, res, next) {
+        const picture = req.picture;
+
+        try {
+            const channel = req.app.albumChannels.get(picture.album.slug);
+            const message = await channel.messages.fetch(picture.messageId).catch(() => {});
+
+            await Picture.deleteOne(picture);
+            await message?.delete();
+
+            res.status(204).send();
+        } catch (err) {
+            next(err);
         }
     },
 };

@@ -60,6 +60,20 @@ schema.static('findAll', async function ({ album, full, count, page }) {
 
     return pictures;
 });
+schema.method('update', async function (document) {
+    this.source = document.source || this.source;
+
+    await this.save();
+    await this.populate('album');
+});
+schema.method('updateFile', async function (channel, { file, album }) {
+    const message = await channel.send({ files: [file?.path || this.url] });
+    await message.edit({ content: `\`${this.id}\`` });
+
+    this.messageId = message.id;
+    this.album = album?._id || this.album;
+});
+
 schema.method('toJSON', function () {
     return {
         ...{ id: this._id, url: this.url, source: this.source },
