@@ -24,7 +24,7 @@ schema.static('createAndUpload', async function (channel, { file, album, source 
 });
 schema.static('findRandom', async function ({ count, full, album }) {
     const pictures = await this.aggregate()
-        .match({ album: album._id })
+        .match(album ? { album: album._id } : {})
         .sample(count || 1)
         .project({
             ...{ url: true, source: true, _id: true },
@@ -43,7 +43,7 @@ schema.static('findRandom', async function ({ count, full, album }) {
     }));
 });
 schema.static('findAll', async function ({ album, full }) {
-    const pictures = await this.find({ album: album?._id }, full ? {} : { album: false });
+    const pictures = await this.find(album ? { album: album._id } : {}, full ? {} : { album: false });
 
     if (full) {
         await this.populate(pictures, { path: 'album' });
