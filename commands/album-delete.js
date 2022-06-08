@@ -1,3 +1,4 @@
+const { MessageEmbed } = require('discord.js');
 const Album = require('../models/album');
 
 module.exports = {
@@ -16,6 +17,13 @@ module.exports = {
         await Album.deleteOne(album);
         message.client.albumChannels.delete(name);
 
-        await message.channel.send(`Album **${name}** successfully deleted.`);
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    color: '#36AE7C',
+                    title: `Album Deleted`,
+                }).setTimestamp(),
+            ],
+        });
     },
 };

@@ -1,3 +1,4 @@
+const { MessageEmbed } = require('discord.js');
 const Album = require('../models/album');
 
 module.exports = {
@@ -34,7 +35,17 @@ module.exports = {
                 break;
         }
 
-        await message.channel.send(`Album **${name}** successfully updated.`);
-        await message.channel.send(`The new value for **${key}** is **${value}**.`);
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    color: '#36AE7C',
+                    title: `Album \`${key}\` Updated`,
+                    fields: [
+                        { name: 'Old value', value: album[key], inline: true },
+                        { name: 'New value', value: value, inline: true },
+                    ],
+                }).setTimestamp(),
+            ],
+        });
     },
 };
