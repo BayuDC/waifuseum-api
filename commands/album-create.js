@@ -1,3 +1,4 @@
+const { MessageEmbed } = require('discord.js');
 const Album = require('../models/album');
 
 module.exports = {
@@ -16,6 +17,18 @@ module.exports = {
         await Album.create({ name, slug: name, channelId: channel.id });
         message.client.albumChannels.set(name, channel);
 
-        await message.channel.send(`Album **${name}** created at ${channel.toString()}.`);
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    color: '#36AE7C',
+                    title: 'Album Created',
+                    fields: [
+                        { name: 'Name', value: name, inline: true },
+                        { name: 'Slug', value: name, inline: true },
+                        { name: 'Channel', value: `<#${channel.id}>` },
+                    ],
+                }).setTimestamp(),
+            ],
+        });
     },
 };
