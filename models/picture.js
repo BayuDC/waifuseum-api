@@ -43,7 +43,9 @@ schema.static('findRandom', async function ({ count, full, album }) {
     }));
 });
 schema.static('findAll', async function ({ album, full }) {
-    const pictures = await this.find(album ? { album: album._id } : {}, full ? {} : { album: false });
+    const pictures = await this.find(album ? { album: album._id } : {}, full ? {} : { album: false }, {
+        sort: { createdAt: 'asc' },
+    });
 
     if (full) {
         await this.populate(pictures, { path: 'album' });
