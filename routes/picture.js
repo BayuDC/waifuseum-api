@@ -22,5 +22,6 @@ router.put('/:id', [
     validate(pictureValidation.update),
     pictureController.update,
 ]);
+router.delete('/:id', pictureController.destroy);
 
 module.exports = router;
