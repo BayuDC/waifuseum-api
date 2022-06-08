@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
 
-const schema = new mongoose.Schema({
-    url: { type: String, required: true },
-    source: { type: String, required: false },
-    messageId: { type: String, required: true },
-    album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
-});
+const schema = new mongoose.Schema(
+    {
+        url: { type: String, required: true },
+        source: { type: String, required: false },
+        messageId: { type: String, required: true },
+        album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
+        createdAt: { type: Date, default: Date.now },
+    },
+    {
+        versionKey: false,
+    }
+);
 
 schema.static('createAndUpload', async function (channel, { file, album, source }) {
     const message = await channel.send({ files: [file.path] });
@@ -23,7 +29,7 @@ schema.static('createAndUpload', async function (channel, { file, album, source 
 });
 schema.static('findRandom', async function ({ count, full, album }) {
     const pictures = await this.aggregate()
-        .match({ album: album._id })
+        .match(album ? { album: album._id } : {})
         .sample(count || 1)
         .project({
             ...{ url: true, source: true, _id: true },
@@ -41,8 +47,12 @@ schema.static('findRandom', async function ({ count, full, album }) {
             : {}),
     }));
 });
-schema.static('findAll', async function ({ album, full }) {
-    const pictures = await this.find({ album: album?._id }, full ? {} : { album: false });
+schema.static('findAll', async function ({ album, full, count, page }) {
+    const pictures = await this.find(album ? { album: album._id } : {})
+        .select(full ? {} : { album: false })
+        .sort({ createdAt: 'desc' })
+        .skip(count * (page - 1))
+        .limit(count);
 
     if (full) {
         await this.populate(pictures, { path: 'album' });

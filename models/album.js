@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
 
-const schema = new mongoose.Schema({
-    name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    channelId: { type: String, required: true },
-    pictures: [{ type: mongoose.mongo.ObjectId, ref: 'Picture' }],
-});
+const schema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        slug: { type: String, required: true, unique: true },
+        channelId: { type: String, required: true },
+        pictures: [{ type: mongoose.mongo.ObjectId, ref: 'Picture' }],
+        createdAt: { type: Date, default: Date.now },
+    },
+    {
+        versionKey: false,
+    }
+);
 
 schema.method('toJSON', function () {
     return {

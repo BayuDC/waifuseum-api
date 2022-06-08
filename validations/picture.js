@@ -22,6 +22,7 @@ const customAlbum = async (value, { req }) => {
 };
 
 const queryCount = query('count').toInt();
+const queryPage = query('page').toInt();
 const queryFull = query('full')
     .if(query('full').exists())
     .customSanitizer(() => true);
@@ -36,6 +37,6 @@ const bodyAlbum = body('album').exists().withMessage('Album name or id is requir
 
 module.exports = {
     index: [queryFull, queryCount, queryAlbum],
-    indexAll: [queryFull, queryAlbum],
+    indexAll: [queryFull, queryAlbum, queryCount, queryPage],
     store: [bodySource, bodyAlbum],
 };

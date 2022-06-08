@@ -37,9 +37,9 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async indexAll(req, res, next) {
-        const { full, album } = req.query;
+        const { full, album, count, page } = req.query;
 
-        const pictures = await Picture.findAll({ full, album });
+        const pictures = await Picture.findAll({ full, album, count, page });
 
         res.json({ pictures });
     },
