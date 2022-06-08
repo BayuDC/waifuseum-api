@@ -42,10 +42,12 @@ schema.static('findRandom', async function ({ count, full, album }) {
             : {}),
     }));
 });
-schema.static('findAll', async function ({ album, full }) {
-    const pictures = await this.find(album ? { album: album._id } : {}, full ? {} : { album: false }, {
-        sort: { createdAt: 'asc' },
-    });
+schema.static('findAll', async function ({ album, full, count, page }) {
+    const pictures = await this.find(album ? { album: album._id } : {})
+        .select(full ? {} : { album: false })
+        .sort({ createdAt: 'desc' })
+        .skip(count * (page - 1))
+        .limit(count);
 
     if (full) {
         await this.populate(pictures, { path: 'album' });
