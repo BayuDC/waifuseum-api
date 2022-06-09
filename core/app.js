@@ -23,6 +23,8 @@ module.exports = bot => {
     app.listen(port, () => {
         console.log('App running at port', port);
 
+        app.dbServer = bot.dbServer;
+        app.dbParent = bot.dbParent;
         app.dbChannels = bot.dbChannels;
     });
 };

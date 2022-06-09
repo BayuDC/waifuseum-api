@@ -1,5 +1,6 @@
 const { readdirSync } = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
+const { parent, server } = require('../config.json');
 const Album = require('../models/album');
 
 const prefix = process.env.BOT_PREFIX || '!';
@@ -11,6 +12,8 @@ const client = new Client({
 
 client.commands = new Collection();
 client.dbChannels = new Collection();
+client.dbServer = {};
+client.dbParent = {};
 
 readdirSync('./commands').forEach(file => {
     const command = require(`../commands/` + file);
@@ -44,6 +47,8 @@ module.exports = next => {
                 });
             });
         });
+        client.guilds.fetch(server).then(guild => Object.assign(client.dbServer, guild));
+        client.channels.fetch(parent).then(channel => Object.assign(client.dbParent, channel));
 
         next(client);
     });
