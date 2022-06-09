@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', require('../routes/main'));
 app.use('/pictures', require('../routes/picture'));
+app.use('/albums', require('../routes/album'));
 
 app.use(error.notFound);
 app.use(error.handle);
