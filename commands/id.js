@@ -25,7 +25,7 @@ module.exports = {
                             iconURL: target.displayAvatarURL(),
                         },
                         fields: [
-                            { name: 'ID', value: target.id },
+                            { name: 'ID', value: `\`${target.id}\`` },
                             { name: 'Type', value: 'User' },
                         ],
                     }).setTimestamp(),
@@ -38,7 +38,7 @@ module.exports = {
                         color: '#47B5FF',
                         title: `Channel #${target.name}`,
                         fields: [
-                            { name: 'ID', value: target.id },
+                            { name: 'ID', value: `\`${target.id}\`` },
                             { name: 'Type', value: 'Text channel' },
                         ],
                     }).setTimestamp(),
@@ -51,7 +51,7 @@ module.exports = {
                         color: '#47B5FF',
                         title: `Role @${target.name}`,
                         fields: [
-                            { name: 'ID', value: target.id },
+                            { name: 'ID', value: `\`${target.id}\`` },
                             { name: 'Type', value: 'Role' },
                         ],
                     }).setTimestamp(),
