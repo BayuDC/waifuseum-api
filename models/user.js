@@ -12,4 +12,12 @@ const schema = new mongoose.Schema(
     }
 );
 
+schema.method('toJSON', function () {
+    return {
+        id: this._id,
+        name: this.name,
+        email: this.email,
+    };
+});
+
 module.exports = mongoose.model('User', schema);

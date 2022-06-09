@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const createError = require('http-errors');
 
+const generateAccessToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateRefreshToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+
 module.exports = {
     /**
      * @param {import('express').Request} req
@@ -24,6 +27,12 @@ module.exports = {
 
             const auth = await bcrypt.compare(password || '', user.password);
             if (!auth) return next(createError(401, 'Password is incorrect'));
+
+            const accessToken = generateAccessToken(user.toJSON());
+            const refreshToken = generateRefreshToken({ id: user.id });
+
+            res.cookie('access_token', accessToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
+            res.cookie('refresh_token', refreshToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 });
 
             res.status(201).json({
                 message: 'Login success',
