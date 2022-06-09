@@ -10,7 +10,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-client.albumChannels = new Collection();
+client.dbChannels = new Collection();
 
 readdirSync('./commands').forEach(file => {
     const command = require(`../commands/` + file);
@@ -40,7 +40,7 @@ module.exports = next => {
         Album.find().then(albums => {
             albums.forEach(album => {
                 client.channels.fetch(album.channelId).then(channel => {
-                    client.albumChannels.set(album.slug, channel);
+                    client.dbChannels.set(album.id, channel);
                 });
             });
         });

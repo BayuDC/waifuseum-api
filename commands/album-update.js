@@ -30,8 +30,6 @@ module.exports = {
                 await Album.updateOne(album, { slug: value });
                 await channel.setName(value);
 
-                message.client.albumChannels.delete(album.slug);
-                message.client.albumChannels.set(value[0], channel);
                 break;
         }
 

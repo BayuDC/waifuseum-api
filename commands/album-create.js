@@ -7,15 +7,15 @@ module.exports = {
     async execute(message, name) {
         if (!name) return await message.channel.send('Album name is required.');
 
-        const album = await Album.findOne({ slug: name });
+        let album = await Album.findOne({ slug: name });
 
         if (album) return await message.channel.send(`Album **${name}** already exists.`);
 
         const channel = await message.guild.channels.create(name);
         await channel.setParent(message.channel.parent);
 
-        await Album.create({ name, slug: name, channelId: channel.id });
-        message.client.albumChannels.set(name, channel);
+        album = await Album.create({ name, slug: name, channelId: channel.id });
+        message.client.dbChannels.set(album.id, channel);
 
         await message.channel.send({
             embeds: [

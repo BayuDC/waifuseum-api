@@ -64,7 +64,7 @@ module.exports = {
         const { album, source } = body;
 
         try {
-            const channel = req.app.albumChannels.get(album.slug);
+            const channel = req.app.dbChannels.get(album.id);
 
             const picture = await Picture.createAndUpload(channel, {
                 file,
@@ -92,8 +92,8 @@ module.exports = {
 
         try {
             if (album || file) {
-                const channel = req.app.albumChannels.get(album?.slug || picture.album.slug);
-                const message = await (album ? req.app.albumChannels.get(picture.album.slug) : channel).messages
+                const channel = req.app.dbChannels.get(album?.id || picture.album.id);
+                const message = await (album ? req.app.dbChannels.get(picture.album.id) : channel).messages
                     .fetch(picture.messageId)
                     .catch(() => {});
 
@@ -121,7 +121,7 @@ module.exports = {
         const picture = req.picture;
 
         try {
-            const channel = req.app.albumChannels.get(picture.album.slug);
+            const channel = req.app.dbChannels.get(picture.album.id);
             const message = await channel.messages.fetch(picture.messageId).catch(() => {});
 
             await Picture.deleteOne(picture);

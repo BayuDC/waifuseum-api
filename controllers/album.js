@@ -1,6 +1,5 @@
 const createError = require('http-errors');
 const Album = require('../models/album');
-const Picture = require('../models/picture');
 
 module.exports = {
     /**
