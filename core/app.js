@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', require('../routes/main'));
 app.use('/pictures', require('../routes/picture'));
+app.use('/albums', require('../routes/album'));
 
 app.use(error.notFound);
 app.use(error.handle);
@@ -22,6 +23,8 @@ module.exports = bot => {
     app.listen(port, () => {
         console.log('App running at port', port);
 
-        app.albumChannels = bot.albumChannels;
+        app.dbServer = bot.dbServer;
+        app.dbParent = bot.dbParent;
+        app.dbChannels = bot.dbChannels;
     });
 };

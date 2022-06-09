@@ -22,6 +22,9 @@ module.exports = {
             case 'server':
                 config.server = value;
                 break;
+            case 'parent':
+                config.parent = value;
+                break;
             default:
                 return await message.channel.send('Nothing updated');
         }

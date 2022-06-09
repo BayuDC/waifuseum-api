@@ -12,6 +12,9 @@ const schema = new mongoose.Schema(
         versionKey: false,
     }
 );
+schema.virtual('picturesCount').get(async function () {
+    return await this.model('Picture').countDocuments({ album: this._id });
+});
 
 schema.method('toJSON', function () {
     return {

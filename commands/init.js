@@ -6,6 +6,7 @@ module.exports = {
     /** @param {import('discord.js').Message} message */
     async execute(message) {
         config.server = message.guildId;
+        config.parent = message.channel.parentId;
 
         await fs.writeFile('./config.json', JSON.stringify(config, null, 2), 'utf8');
         await message.channel.send('Initialized **config.json**');
