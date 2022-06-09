@@ -15,7 +15,7 @@ module.exports = {
         await channel.delete();
 
         await Album.deleteOne(album);
-        message.client.albumChannels.delete(album.id);
+        message.client.dbChannels.delete(album.id);
 
         await message.channel.send({
             embeds: [

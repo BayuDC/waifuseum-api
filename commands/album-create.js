@@ -1,5 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const Album = require('../models/album');
+const { parent } = require('../config.json');
 
 module.exports = {
     name: 'album-create',
@@ -12,7 +13,7 @@ module.exports = {
         if (album) return await message.channel.send(`Album **${name}** already exists.`);
 
         const channel = await message.guild.channels.create(name);
-        await channel.setParent(message.channel.parent);
+        await channel.setParent(parent);
 
         album = await Album.create({ name, slug: name, channelId: channel.id });
         message.client.dbChannels.set(album.id, channel);
