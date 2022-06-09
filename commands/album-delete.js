@@ -1,16 +1,11 @@
 const { MessageEmbed } = require('discord.js');
+const { isMongoId } = require('validator').default;
 const Album = require('../models/album');
 
 module.exports = {
     name: 'album-delete',
     /** @param {import('discord.js').Message} message */
-    async execute(message, name) {
-        if (!name) return await message.channel.send('Album name is required.');
-
-        const album = await Album.findOne({ slug: name });
-
-        if (!album) return await message.channel.send(`Album **${name}** does not exist.`);
-
+    async execute(message, album) {
         const channel = await message.client.channels.fetch(album.channelId);
         await channel.delete();
 
@@ -26,4 +21,16 @@ module.exports = {
             ],
         });
     },
+    validations: [
+        async (value, args) => {
+            value = args.join(' ');
+            if (!value) throw new Error('Album identifier is required');
+
+            const isId = isMongoId(value);
+            const album = await Album.findOne(isId ? { _id: value } : { $or: [{ name: value }, { slug: value }] });
+            if (!album) throw Error('Album does not exist');
+
+            return album;
+        },
+    ],
 };
