@@ -1,11 +1,14 @@
 const router = require('express').Router();
-const { load, index, show, store, update, destroy } = require('../controllers/album');
+const validate = require('../middlewares/validate');
 
-router.param('id', load);
-router.get('/', index);
-router.get('/:id', show);
-router.post('/', store);
-router.put('/:id', update);
-router.delete('/:id', destroy);
+const controller = require('../controllers/album');
+const validation = require('../validations/album');
+
+router.param('id', controller.load);
+router.get('/', controller.index);
+router.get('/:id', controller.show);
+router.post('/', validate(validation.store), controller.store);
+router.put('/:id', controller.update);
+router.delete('/:id', controller.destroy);
 
 module.exports = router;

@@ -41,7 +41,25 @@ module.exports = {
             },
         });
     },
-    store(req, res, next) {},
+
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async store(req, res, next) {
+        const { name, slug } = req.body;
+
+        const channel = await req.app.dbServer.channels.create(slug);
+        await channel.setParent(req.app.dbParent.id);
+
+        const album = await Album.create({ name, slug, channelId: channel.id });
+        req.app.dbChannels.set(album.id, channel);
+
+        res.json({
+            album: album.toJSON(),
+        });
+    },
     update(req, res, next) {},
     destroy(req, res, next) {},
 };
