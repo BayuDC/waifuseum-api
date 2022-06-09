@@ -7,7 +7,7 @@ const prefix = process.env.BOT_PREFIX || '!';
 const token = process.env.BOT_TOKEN;
 
 const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
 });
 
 client.commands = new Collection();
