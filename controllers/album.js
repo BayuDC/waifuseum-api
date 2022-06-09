@@ -50,15 +50,19 @@ module.exports = {
     async store(req, res, next) {
         const { name, slug } = req.body;
 
-        const channel = await req.app.dbServer.channels.create(slug);
-        await channel.setParent(req.app.dbParent.id);
+        try {
+            const channel = await req.app.dbServer.channels.create(slug);
+            await channel.setParent(req.app.dbParent.id);
 
-        const album = await Album.create({ name, slug, channelId: channel.id });
-        req.app.dbChannels.set(album.id, channel);
+            const album = await Album.create({ name, slug, channelId: channel.id });
+            req.app.dbChannels.set(album.id, channel);
 
-        res.status(201).json({
-            album: album.toJSON(),
-        });
+            res.status(201).json({
+                album: album.toJSON(),
+            });
+        } catch {
+            next(createError(400, 'Unknown error'));
+        }
     },
     /**
      * @param {import('express').Request} req
@@ -69,16 +73,20 @@ module.exports = {
         const { name, slug } = req.body;
         let album = req.album;
 
-        album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
+        try {
+            album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
 
-        if (slug) {
-            const channel = await req.app.dbChannels.get(album.id);
-            await channel.setName(slug);
+            if (slug) {
+                const channel = await req.app.dbChannels.get(album.id);
+                await channel.setName(slug);
+            }
+
+            res.json({
+                album: album.toJSON(),
+            });
+        } catch {
+            next(createError(400, 'Unknown error'));
         }
-
-        res.json({
-            album: album.toJSON(),
-        });
     },
     /**
      * @param {import('express').Request} req
@@ -86,12 +94,16 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        const album = req.album;
-        const channel = await req.app.dbChannels.get(album.id);
+        try {
+            const album = req.album;
+            const channel = await req.app.dbChannels.get(album.id);
 
-        await Album.findByIdAndDelete(album.id);
-        await channel?.delete();
+            await Album.findByIdAndDelete(album.id);
+            await channel?.delete();
 
-        res.status(204).send();
+            res.status(204).send();
+        } catch {
+            next(createError(400, 'Unknown error'));
+        }
     },
 };

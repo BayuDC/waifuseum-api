@@ -107,7 +107,7 @@ module.exports = {
         } catch (err) {
             if (err.name == 'AbortError') return next(createError(422, 'Unprocessable file'));
 
-            next(err);
+            next(createError(400, 'Unknown error'));
         } finally {
             file?.destroy();
         }
@@ -129,7 +129,7 @@ module.exports = {
 
             res.status(204).send();
         } catch (err) {
-            next(err);
+            next(createError(400, 'Unknown error'));
         }
     },
 };
