@@ -80,5 +80,18 @@ module.exports = {
             album: album.toJSON(),
         });
     },
-    destroy(req, res, next) {},
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async destroy(req, res, next) {
+        const album = req.album;
+        const channel = await req.app.dbChannels.get(album.id);
+
+        await Album.findByIdAndDelete(album.id);
+        await channel?.delete();
+
+        res.status(204).send();
+    },
 };
