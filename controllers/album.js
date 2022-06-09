@@ -56,10 +56,29 @@ module.exports = {
         const album = await Album.create({ name, slug, channelId: channel.id });
         req.app.dbChannels.set(album.id, channel);
 
+        res.status(201).json({
+            album: album.toJSON(),
+        });
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async update(req, res, next) {
+        const { name, slug } = req.body;
+        let album = req.album;
+
+        album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
+
+        if (slug) {
+            const channel = await req.app.dbChannels.get(album.id);
+            await channel.setName(slug);
+        }
+
         res.json({
             album: album.toJSON(),
         });
     },
-    update(req, res, next) {},
     destroy(req, res, next) {},
 };

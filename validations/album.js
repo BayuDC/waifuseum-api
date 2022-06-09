@@ -26,4 +26,12 @@ module.exports = {
                 .run(req);
         }),
     ],
+    update: [
+        body('name').optional().trim(),
+        body('slug')
+            .trim()
+            .optional()
+            .matches(/^[a-z0-9\-\_]+$/i)
+            .withMessage('Invalid slug format'),
+    ],
 };
