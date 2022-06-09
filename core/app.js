@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', require('../routes/main'));
+app.use('/auth', require('../routes/auth'));
 app.use('/pictures', require('../routes/picture'));
 app.use('/albums', require('../routes/album'));
 
