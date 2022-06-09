@@ -24,12 +24,23 @@ client.on('messageCreate', async message => {
     try {
         if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-        const args = message.content.slice(prefix.length).trim().split(/ +/);
-        const command = args.shift().toLowerCase();
+        let args = message.content.slice(prefix.length).trim().split(/ +/);
+        let command = args.shift().toLowerCase();
 
-        if (!client.commands.has(command)) return;
+        command = client.commands.get(command);
+        if (!command) return message.channel.send('Command not found');
 
-        await client.commands.get(command).execute(message, ...args);
+        if (command.validations) {
+            try {
+                args = await Promise.all(command.validations.map((validate, i) => validate(args[i], args)));
+            } catch (error) {
+                return message.channel.send({
+                    embeds: [{ title: 'Invalid argument', description: error.message, color: '#EB5353' }],
+                });
+            }
+        }
+
+        await command.execute(message, ...args);
     } catch (error) {
         await message.channel.send('Something went wrong');
         console.log(error);
