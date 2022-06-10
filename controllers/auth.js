@@ -46,5 +46,15 @@ module.exports = {
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
      */
-    logout(req, res, next) {},
+    async logout(req, res, next) {
+        const user = req.user;
+        await User.findByIdAndUpdate(user.id, { token: '' });
+
+        res.clearCookie('access_token');
+        res.clearCookie('refresh_token');
+
+        res.status(200).json({
+            message: 'Logout success',
+        });
+    },
 };
