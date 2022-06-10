@@ -70,4 +70,20 @@ module.exports = {
             next(err);
         }
     },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async destroy(req, res, next) {
+        try {
+            const { user } = req.data;
+
+            await User.findByIdAndDelete(user.id);
+
+            res.status(204).send();
+        } catch (err) {
+            next(err);
+        }
+    },
 };

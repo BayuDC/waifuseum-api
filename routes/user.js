@@ -13,6 +13,6 @@ router.get('/:id', gate('user-read'), controller.show);
 
 router.post('/', gate('user-write'), validate(validation.store), controller.store);
 router.put('/:id', gate('user-write'), validate(validation.update), controller.update);
-router.delete('/:id');
+router.delete('/:id', gate('user-write'), controller.destroy);
 
 module.exports = router;
