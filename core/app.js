@@ -2,7 +2,7 @@ const express = require('express');
 const cookie = require('cookie-parser');
 const cors = require('cors');
 
-const auth = require('../middlewares/auth');
+const { auth } = require('../middlewares/auth');
 const error = require('../middlewares/error');
 
 const app = express();

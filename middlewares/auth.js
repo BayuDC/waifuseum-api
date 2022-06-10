@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/user');
+const createError = require('http-errors');
 
 const generateAccessToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 const generateRefreshToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-/**
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @param {import('express').NextFunction} next
- */
-const auth = async (req, res, next) => {
+const auth = () => async (req, res, next) => {
     const accessToken = req.cookies['access_token'];
     const refreshToken = req.cookies['refresh_token'];
     try {
@@ -46,7 +42,13 @@ const auth = async (req, res, next) => {
         next();
     }
 };
+const guard = () => (req, res, next) => {
+    if (!req.user) return next(createError.Unauthorized());
 
-module.exports = function () {
-    return auth;
+    next();
+};
+
+module.exports = {
+    auth,
+    guard,
 };
