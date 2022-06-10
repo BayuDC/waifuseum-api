@@ -1,6 +1,33 @@
+const createError = require('http-errors');
 const User = require('../models/user');
 
 module.exports = {
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     * @param {string} id
+     */
+    async load(req, res, next, id) {
+        try {
+            const user = await User.findById(id);
+            if (!user) throw undefined;
+
+            req.data = { user };
+            next();
+        } catch (err) {
+            next(createError(404, 'User not found'));
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    show(req, res, next) {
+        const { user } = req.data;
+        res.json({ user });
+    },
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
