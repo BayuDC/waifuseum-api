@@ -30,7 +30,7 @@ _Server Boost_ is needed to increase the maximum file size limit.
 
 ## 🔖 Endpoints
 
-Base url: https://api.waifuseum.my.id
+Base url: https://waifuseum.herokuapp.com
 
 | Path             | Method | Body or Query                              |
 | ---------------- | ------ | ------------------------------------------ |
