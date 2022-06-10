@@ -8,7 +8,7 @@ const validation = require('../validations/user');
 router.use(guard());
 router.param('id', controller.load);
 
-router.get('/');
+router.get('/', gate('user-read'), validate(validation.index), controller.index);
 router.get('/:id', gate('user-read'), controller.show);
 
 router.post('/', gate('user-write'), validate(validation.store), controller.store);

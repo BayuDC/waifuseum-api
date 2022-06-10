@@ -24,6 +24,17 @@ module.exports = {
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
      */
+    async index(req, res, next) {
+        const { full } = req.query;
+        const users = await (full ? User.find() : User.find().select('-abilities'));
+
+        res.json(users);
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
     show(req, res, next) {
         const { user } = req.data;
         res.json({ user });

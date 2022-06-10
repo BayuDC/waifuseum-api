@@ -1,7 +1,12 @@
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 const User = require('../models/user');
 
 module.exports = {
+    index: [
+        query('full')
+            .if(query('full').exists())
+            .customSanitizer(() => 1),
+    ],
     store: [
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('email')
