@@ -14,7 +14,6 @@ const schema = new mongoose.Schema(
         versionKey: false,
     }
 );
-// hash the passowrd
 schema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 

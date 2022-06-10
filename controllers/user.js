@@ -22,22 +22,20 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
-     * @param {import('express').NextFunction} next
      */
-    async index(req, res, next) {
-        const { full } = req.query;
-        const users = await (full ? User.find() : User.find().select('-abilities'));
-
-        res.json(users);
+    show(req, res) {
+        const { user } = req.data;
+        res.json({ user });
     },
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
-     * @param {import('express').NextFunction} next
      */
-    show(req, res, next) {
-        const { user } = req.data;
-        res.json({ user });
+    async index(req, res) {
+        const { full } = req.query;
+        const users = await (full ? User.find() : User.find().select('-abilities'));
+
+        res.json(users);
     },
     /**
      * @param {import('express').Request} req
@@ -51,6 +49,23 @@ module.exports = {
             const user = await User.create({ name, email, password, abilities });
 
             res.status(201).send({ user: user.toJSON() });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async update(req, res, next) {
+        try {
+            let { user } = req.data;
+            const { name, email, password, abilities } = req.body;
+
+            user = await User.findByIdAndUpdate(user.id, { name, email, password, abilities }, { new: true });
+
+            res.json({ user: user.toJSON() });
         } catch (err) {
             next(err);
         }
