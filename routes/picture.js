@@ -1,27 +1,18 @@
 const router = require('express').Router();
 const validate = require('../middlewares/validate');
+const { guard } = require('../middlewares/auth');
 
-const pictureController = require('../controllers/picture');
-const pictureMiddleware = require('../middlewares/picture');
-const pictureValidation = require('../validations/picture');
+const controller = require('../controllers/picture');
+const middleware = require('../middlewares/picture');
+const validation = require('../validations/picture');
 
-router.param('id', pictureController.load);
+router.param('id', controller.load);
 
-router.get('/', validate(pictureValidation.index), pictureController.index);
-router.get('/all', validate(pictureValidation.index), pictureController.indexAll);
-router.get('/:id', pictureController.show);
-router.post('/', [
-    pictureMiddleware.upload,
-    pictureMiddleware.download,
-    validate(pictureValidation.store),
-    pictureController.store,
-]);
-router.put('/:id', [
-    pictureMiddleware.upload,
-    pictureMiddleware.download,
-    validate(pictureValidation.update),
-    pictureController.update,
-]);
-router.delete('/:id', pictureController.destroy);
+router.get('/', validate(validation.index), controller.index);
+router.get('/all', validate(validation.index), controller.indexAll);
+router.get('/:id', controller.show);
+router.post('/', guard(), middleware.upload, middleware.download, validate(validation.store), controller.store);
+router.put('/:id', guard(), middleware.upload, middleware.download, validate(validation.update), controller.update);
+router.delete('/:id', guard(), controller.destroy);
 
 module.exports = router;
