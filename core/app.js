@@ -16,6 +16,7 @@ app.use(auth());
 
 app.use('/', require('../routes/main'));
 app.use('/auth', require('../routes/auth'));
+app.use('/users', require('../routes/user'));
 app.use('/pictures', require('../routes/picture'));
 app.use('/albums', require('../routes/album'));
 
