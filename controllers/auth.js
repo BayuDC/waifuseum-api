@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const User = require('../models/user');
 const createError = require('http-errors');
 
@@ -7,12 +8,6 @@ const generateAccessToken = payload => jwt.sign(payload, process.env.JWT_SECRET,
 const generateRefreshToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 module.exports = {
-    /**
-     * @param {import('express').Request} req
-     * @param {import('express').Response} res
-     * @param {import('express').NextFunction} next
-     */
-    index(req, res, next) {},
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
@@ -28,8 +23,13 @@ module.exports = {
             const auth = await bcrypt.compare(password || '', user.password);
             if (!auth) return next(createError(401, 'Password is incorrect'));
 
+            const token = crypto.randomBytes(32).toString('hex');
+
             const accessToken = generateAccessToken(user.toJSON());
-            const refreshToken = generateRefreshToken({ id: user.id });
+            const refreshToken = generateRefreshToken({ secret: token });
+
+            user.token = token;
+            await user.save();
 
             res.cookie('access_token', accessToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
             res.cookie('refresh_token', refreshToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 });

@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/user');
 
-const secret = process.env.JWT_SECRET;
+const generateAccessToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateRefreshToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 /**
  * @param {import('express').Request} req
@@ -13,22 +15,32 @@ const auth = async (req, res, next) => {
     const refreshToken = req.cookies['refresh_token'];
     try {
         if (accessToken) {
-            req.user = jwt.verify(accessToken, secret);
+            req.user = jwt.verify(accessToken, process.env.JWT_SECRET);
         } else if (refreshToken) {
-            const { id } = jwt.verify(refreshToken, secret);
-            const user = await User.findById(id);
+            const { secret } = jwt.verify(refreshToken, process.env.JWT_SECRET);
+            const user = await User.findOne({ token: secret });
 
             if (!user) throw undefined;
 
-            const token = jwt.sign(user.toJSON(), secret, { expiresIn: '1h' });
+            const token = crypto.randomBytes(32).toString('hex');
 
-            res.cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
+            user.token = token;
+            user.save();
+
+            res.cookie('access_token', generateAccessToken(user.toJSON()), {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 1,
+            });
+            res.cookie('refresh_token', generateRefreshToken({ secret: token }), {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7,
+            });
             req.user = user.toJSON();
         }
 
         delete req.user.iat;
         delete req.user.exp;
-    } catch {
+    } catch (err) {
         req.user = undefined;
     } finally {
         next();
