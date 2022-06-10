@@ -47,8 +47,14 @@ const guard = () => (req, res, next) => {
 
     next();
 };
+const gate = ability => (req, res, next) => {
+    if (!req.user.abilities.includes(ability)) return next(createError.Forbidden());
+
+    next();
+};
 
 module.exports = {
     auth,
     guard,
+    gate,
 };

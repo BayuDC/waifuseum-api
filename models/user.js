@@ -4,6 +4,7 @@ const schema = new mongoose.Schema(
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
+        abilities: { type: Array, default: [] },
         discordId: { type: String, required: true, unique: true },
         token: { type: String },
     },
@@ -17,6 +18,7 @@ schema.method('toJSON', function () {
         id: this._id,
         name: this.name,
         email: this.email,
+        abilities: this.abilities,
     };
 });
 
