@@ -83,7 +83,7 @@ module.exports = {
             { full, count, page }
         );
 
-        res.json({ pictures, albums });
+        res.json({ pictures });
     },
     /**
      * @param {import('express').Request} req
@@ -123,9 +123,9 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
-        const { body, file, data } = req;
-        const { album, source } = body;
-        const { picture, canModify } = data;
+        const { album, source } = req.body;
+        const { picture, canModify } = req.data;
+        const file = req.file;
 
         try {
             if (!canModify) throw createError(403, 'You are not allowed to update this picture');
