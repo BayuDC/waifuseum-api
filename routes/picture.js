@@ -14,7 +14,7 @@ router.get('/:id', controller.show);
 
 router.post('/', [
     guard(),
-    gate('picture-create'),
+    gate('picture-access'),
     middleware.upload,
     middleware.download,
     validate(validation.store),
@@ -22,12 +22,12 @@ router.post('/', [
 ]);
 router.put('/:id', [
     guard(),
-    gate('picture-update'),
+    gate('picture-access'),
     middleware.upload,
     middleware.download,
     validate(validation.update),
     controller.update,
 ]);
-router.delete('/:id', guard(), gate('picture-delete'), controller.destroy);
+router.delete('/:id', guard(), gate('picture-access'), controller.destroy);
 
 module.exports = router;

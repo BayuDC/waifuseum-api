@@ -1,7 +1,15 @@
-const { check, body } = require('express-validator');
+const { check, body, query } = require('express-validator');
 const Album = require('../models/album');
 
 module.exports = {
+    index: [
+        query('visibility').optional().trim(),
+        query('admin')
+            .if(query('admin').exists())
+            .customSanitizer((_, { req }) => {
+                return req.user.abilities.includes('album-admin');
+            }),
+    ],
     store: [
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('slug')
@@ -25,9 +33,11 @@ module.exports = {
                 .customSanitizer(() => value)
                 .run(req);
         }),
+        body('private').optional().toBoolean(),
     ],
     update: [
         body('name').optional().trim(),
+        body('private').optional().toBoolean(),
         body('slug')
             .trim()
             .optional()
