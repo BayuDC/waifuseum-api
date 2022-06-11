@@ -23,14 +23,6 @@ module.exports = {
      * @param {import('express').Request} req
      * @param {import('express').Response} res
      */
-    async index(req, res) {
-        const albums = await Album.find();
-        res.json({ albums });
-    },
-    /**
-     * @param {import('express').Request} req
-     * @param {import('express').Response} res
-     */
     async show(req, res) {
         const album = req.album;
 
@@ -40,6 +32,14 @@ module.exports = {
                 picturesCount: await album.picturesCount,
             },
         });
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async index(req, res) {
+        const albums = await Album.find();
+        res.json({ albums });
     },
 
     /**
@@ -51,7 +51,7 @@ module.exports = {
         const { name, slug } = req.body;
 
         try {
-            const channel = await req.app.dbServer.channels.create(slug);
+            const channel = await req.app.dbServer.channels.create('🌸・' + slug);
             await channel.setParent(req.app.dbParent.id);
 
             const album = await Album.create({ name, slug, channelId: channel.id });
@@ -78,7 +78,7 @@ module.exports = {
 
             if (slug) {
                 const channel = await req.app.dbChannels.get(album.id);
-                await channel.setName(slug);
+                await channel.setName('🌸・' + slug);
             }
 
             res.json({

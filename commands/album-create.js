@@ -6,7 +6,7 @@ module.exports = {
     name: 'album-create',
     /** @param {import('discord.js').Message} message */
     async execute(message, name, slug) {
-        const channel = await message.guild.channels.create(name);
+        const channel = await message.guild.channels.create('🌸・' + slug);
         await channel.setParent(parent);
 
         const album = await Album.create({ name, slug, channelId: channel.id });
