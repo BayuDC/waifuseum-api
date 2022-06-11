@@ -96,6 +96,10 @@ module.exports = {
     async destroy(req, res, next) {
         try {
             const album = req.album;
+            if (await album.picturesCount) {
+                return next(createError(409, 'Album is not empty'));
+            }
+
             const channel = await req.app.dbChannels.get(album.id);
 
             await Album.findByIdAndDelete(album.id);

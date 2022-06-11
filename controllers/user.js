@@ -79,6 +79,10 @@ module.exports = {
         try {
             const { user } = req.data;
 
+            if (user.id == req.user.id) {
+                throw createError(409, 'You can not delete yourself');
+            }
+
             await User.findByIdAndDelete(user.id);
 
             res.status(204).send();
