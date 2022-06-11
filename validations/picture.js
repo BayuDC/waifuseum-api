@@ -6,9 +6,8 @@ const validateAlbum = async (value, { req }) => {
     const isId = isMongoId(value);
     const album = await Album.findOne(isId ? { _id: value } : { $or: [{ name: value }, { slug: value }] });
 
-    if (!album) {
-        throw Error('Album does not exist');
-    }
+    if (!album) throw Error('Album does not exist');
+    if (album.createdBy.toString() != req.user.id) throw Error('This album is not your own');
 
     check('album')
         .customSanitizer(() => album)

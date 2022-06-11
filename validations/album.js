@@ -6,7 +6,9 @@ module.exports = {
         query('visibility').optional().trim(),
         query('admin')
             .if(query('admin').exists())
-            .customSanitizer(() => true),
+            .customSanitizer((_, { req }) => {
+                return req.user.abilities.includes('album-admin');
+            }),
     ],
     store: [
         body('name').notEmpty().withMessage('Name is required').trim(),

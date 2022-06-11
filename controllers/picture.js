@@ -95,9 +95,6 @@ module.exports = {
         const { album, source } = body;
 
         try {
-            if (album.createdBy.toString() != req.user.id)
-                throw createError(403, 'You are not allowed to upload pictures to this album');
-
             const channel = req.app.dbChannels.get(album.id);
 
             const picture = await Picture.createAndUpload(channel, {
