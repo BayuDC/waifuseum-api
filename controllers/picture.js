@@ -1,3 +1,4 @@
+const Album = require('../models/album');
 const Picture = require('../models/picture');
 const createError = require('http-errors');
 
@@ -49,9 +50,18 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async index(req, res, next) {
-        const { count, full, album } = req.query;
+        const { count, full, album, mine } = req.query;
 
-        const pictures = await Picture.findRandom({ count, full, album });
+        const albums = await Album.find({
+            ...{ private: false },
+            ...(album ? { _id: album.id } : {}),
+            ...(mine ? { createdBy: req.user.id } : {}),
+        });
+        const pictures = await Picture.findRandom(
+            { album: { $in: albums.map(album => album._id) } },
+            { count, full }
+            //
+        );
 
         res.json({ pictures });
     },
@@ -61,11 +71,19 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async indexAll(req, res, next) {
-        const { full, album, count, page } = req.query;
+        const { full, count, page, mine, album, admin } = req.query;
 
-        const pictures = await Picture.findAll({ full, album, count, page });
+        const albums = await Album.find({
+            ...(album ? { _id: album.id } : {}),
+            ...(!admin ? { private: false } : {}),
+            ...(mine ? { createdBy: req.user.id } : {}),
+        });
+        const pictures = await Picture.findAll(
+            { album: { $in: albums.map(album => album._id) } },
+            { full, count, page }
+        );
 
-        res.json({ pictures });
+        res.json({ pictures, albums });
     },
     /**
      * @param {import('express').Request} req

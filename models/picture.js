@@ -28,29 +28,27 @@ schema.static('createAndUpload', async function (channel, { file, album, source 
 
     return picture;
 });
-schema.static('findRandom', async function ({ count, full, album }) {
+schema.static('findRandom', async function (query, { count, full }) {
     const pictures = await this.aggregate()
-        .match(album ? { album: album._id } : {})
+        .match(query)
         .sample(count || 1)
         .project({
-            ...{ url: true, source: true, _id: true },
-            ...(full ? { album: true } : {}),
+            ...{ _id: true, url: true },
+            ...(full ? { source: true, album: true } : {}),
         });
 
-    if (full) {
-        await this.populate(pictures, { path: 'album' });
-    }
+    if (full) await this.populate(pictures, { path: 'album' });
 
     return pictures.map(picture => ({
-        ...{ id: picture._id, url: picture.url, source: picture.source },
-        ...(picture.album
-            ? { album: { id: picture.album._id, name: picture.album.name, slug: picture.album.slug } }
-            : {}),
+        id: picture._id,
+        url: picture.url,
+        source: picture.source,
+        album: picture.album,
     }));
 });
-schema.static('findAll', async function ({ album, full, count, page }) {
-    const pictures = await this.find(album ? { album: album._id } : {})
-        .select(full ? {} : { album: false })
+schema.static('findAll', async function (query, { full, count, page }) {
+    const pictures = await this.find(query)
+        .select(full ? {} : { album: false, source: false })
         .sort({ createdAt: 'desc' })
         .skip(count * (page - 1))
         .limit(count);

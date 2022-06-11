@@ -22,6 +22,14 @@ module.exports = {
         query('full')
             .if(query('full').exists())
             .customSanitizer(() => true),
+        query('mine')
+            .if(query('mine').exists())
+            .customSanitizer(() => true),
+        query('admin')
+            .if(query('admin').exists())
+            .customSanitizer((_, { req }) => {
+                return req.user.abilities.includes('picture-admin');
+            }),
         query('album').if(query('album').exists()).custom(validateAlbum),
     ],
     store: [
