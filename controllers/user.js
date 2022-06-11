@@ -11,12 +11,12 @@ module.exports = {
     async load(req, res, next, id) {
         try {
             const user = await User.findById(id);
-            if (!user) throw undefined;
+            if (!user) throw createError(404, 'User not found');
 
             req.data = { user };
             next();
         } catch (err) {
-            next(createError(404, 'User not found'));
+            next(err);
         }
     },
     /**

@@ -18,10 +18,10 @@ module.exports = {
             const { email, password } = req.body;
 
             const user = await User.findOne({ email });
-            if (!user) return next(createError(404, 'User not found'));
+            if (!user) throw createError(404, 'User not found');
 
             const auth = await bcrypt.compare(password || '', user.password);
-            if (!auth) return next(createError(401, 'Password is incorrect'));
+            if (!auth) throw createError(401, 'Password is incorrect');
 
             const token = crypto.randomBytes(32).toString('hex');
 

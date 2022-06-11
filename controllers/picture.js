@@ -11,13 +11,13 @@ module.exports = {
     async load(req, res, next, id) {
         try {
             const picture = await Picture.findById(id);
-            if (!picture) throw undefined;
+            if (!picture) throw createError(404, 'Picture not found');
 
             await picture.populate('album');
             req.picture = picture;
             next();
-        } catch {
-            next(createError(404, 'Picture not found'));
+        } catch (err) {
+            next(err);
         }
     },
     /**
@@ -74,9 +74,11 @@ module.exports = {
 
             res.status(201).json({ picture: picture.toJSON() });
         } catch (err) {
-            if (err.name == 'AbortError') return next(createError(422, 'Unprocessable file'));
+            if (err.name == 'AbortError') {
+                err = createError(422, 'Unprocessable file');
+            }
 
-            next(createError(400, 'Unknown error'));
+            next(err);
         } finally {
             file?.destroy();
         }
@@ -105,9 +107,11 @@ module.exports = {
 
             res.json({ picture: picture.toJSON() });
         } catch (err) {
-            if (err.name == 'AbortError') return next(createError(422, 'Unprocessable file'));
+            if (err.name == 'AbortError') {
+                err = createError(422, 'Unprocessable file');
+            }
 
-            next(createError(400, 'Unknown error'));
+            next(err);
         } finally {
             file?.destroy();
         }
@@ -129,7 +133,7 @@ module.exports = {
 
             res.status(204).send();
         } catch (err) {
-            next(createError(400, 'Unknown error'));
+            next(err);
         }
     },
 };
