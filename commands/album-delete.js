@@ -4,6 +4,7 @@ const Album = require('../models/album');
 
 module.exports = {
     name: 'album-delete',
+    owner: true,
     /** @param {import('discord.js').Message} message */
     async execute(message, album) {
         if (await album.picturesCount) {

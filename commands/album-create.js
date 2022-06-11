@@ -4,6 +4,7 @@ const { parent } = require('../config.json');
 
 module.exports = {
     name: 'album-create',
+    owner: true,
     /** @param {import('discord.js').Message} message */
     async execute(message, name, slug) {
         const channel = await message.guild.channels.create('🌸・' + slug);

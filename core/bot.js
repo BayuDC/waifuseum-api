@@ -1,6 +1,6 @@
 const { readdirSync } = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
-const { parent, server } = require('../config.json');
+const { parent, server, owner, admin } = require('../config.json');
 const Album = require('../models/album');
 
 const prefix = process.env.BOT_PREFIX || '!';
@@ -29,6 +29,13 @@ client.on('messageCreate', async message => {
 
         command = client.commands.get(command);
         if (!command) return message.channel.send('Command not found');
+
+        if (
+            (command.owner && !message.member.roles.cache.has(owner)) ||
+            (command.admin && !message.member.roles.cache.has(admin))
+        ) {
+            return message.channel.send('You do not have permission to use this command');
+        }
 
         if (command.validations) {
             try {
