@@ -6,7 +6,7 @@ const controller = require('../controllers/album');
 const validation = require('../validations/album');
 
 router.param('id', controller.load);
-router.get('/', controller.index);
+router.get('/', validate(validation.index), controller.index);
 router.get('/:id', controller.show);
 router.post('/', guard(), gate('album-access'), validate(validation.store), controller.store);
 router.put('/:id', guard(), gate('album-access'), validate(validation.update), controller.update);

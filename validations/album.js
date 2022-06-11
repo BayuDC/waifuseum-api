@@ -1,7 +1,8 @@
-const { check, body } = require('express-validator');
+const { check, body, query } = require('express-validator');
 const Album = require('../models/album');
 
 module.exports = {
+    index: [query('visibility').optional().trim()],
     store: [
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('slug')

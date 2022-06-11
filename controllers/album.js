@@ -47,7 +47,21 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        const albums = await Album.find();
+        const user = req.user;
+        const { visibility } = req.query;
+        let albums = [];
+
+        switch (visibility) {
+            case 'public':
+                albums = await Album.find({ private: false }).select('-private');
+                break;
+            case 'private':
+                albums = await Album.find({ private: true, createdBy: user.id }).select('-private');
+                break;
+            default:
+                albums = await Album.find({ $or: [{ private: false }, { createdBy: user.id }] });
+        }
+
         res.json({ albums });
     },
 
