@@ -23,7 +23,7 @@ module.exports = {
                                 }),
                             ],
                         })
-                        .then(msg => setTimeout(m => msg.delete(), 4000));
+                        .then(msg => setTimeout(() => msg.delete(), 4000));
                 });
         } catch (e) {
             console.log(e);
