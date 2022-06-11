@@ -29,6 +29,8 @@ module.exports = {
                 config.owner = value;
             case 'admin':
                 config.admin = value;
+            case 'worker':
+                config.worker = value;
                 break;
             default:
                 return await message.channel.send('Nothing updated');

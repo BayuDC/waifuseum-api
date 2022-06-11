@@ -8,8 +8,8 @@ const validation = require('../validations/album');
 router.param('id', controller.load);
 router.get('/', controller.index);
 router.get('/:id', controller.show);
-router.post('/', guard(), gate('album-create'), validate(validation.store), controller.store);
-router.put('/:id', guard(), gate('album-update'), validate(validation.update), controller.update);
-router.delete('/:id', guard(), gate('album-delete'), controller.destroy);
+router.post('/', guard(), gate('album-access'), validate(validation.store), controller.store);
+router.put('/:id', guard(), gate('album-access'), validate(validation.update), controller.update);
+router.delete('/:id', guard(), gate('album-access'), controller.destroy);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 const createError = require('http-errors');
 const Album = require('../models/album');
+const User = require('../models/user');
+const { worker: workerId, parent: parentId } = require('../config.json');
 
 module.exports = {
     /**
@@ -51,16 +53,25 @@ module.exports = {
         const { name, slug, private } = req.body;
 
         try {
-            const channel = await req.app.dbServer.channels.create('🌸・' + slug);
-            await channel.setParent(req.app.dbParent.id);
+            /** @type {import('discord.js').Guild} guild */
+            const guild = req.app.dbServer;
+            /** @type {import('discord.js').TextChannel} channel */
+            const channel = await guild.channels.create('🌸・' + slug, { parent: parentId });
 
-            const album = await Album.create({
-                name,
-                slug,
-                private,
-                channelId: channel.id,
-                createdBy: req.user.id,
-            });
+            if (private) {
+                const ownerId = (await User.findById(req.user.id)).discordId;
+                const owner = ownerId ? await guild.members.fetch(ownerId) : undefined;
+
+                await channel.permissionOverwrites.set([
+                    ...[
+                        { id: guild.id, deny: ['VIEW_CHANNEL'] },
+                        { id: workerId, allow: ['VIEW_CHANNEL'] },
+                    ],
+                    ...(owner ? [{ id: owner.id, allow: ['VIEW_CHANNEL'] }] : []),
+                ]);
+            }
+
+            const album = await Album.create({ name, slug, private, channelId: channel.id, createdBy: req.user.id });
             req.app.dbChannels.set(album.id, channel);
 
             res.status(201).json({
