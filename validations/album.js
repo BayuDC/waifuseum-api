@@ -2,7 +2,12 @@ const { check, body, query } = require('express-validator');
 const Album = require('../models/album');
 
 module.exports = {
-    index: [query('visibility').optional().trim()],
+    index: [
+        query('visibility').optional().trim(),
+        query('admin')
+            .if(query('admin').exists())
+            .customSanitizer(() => true),
+    ],
     store: [
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('slug')

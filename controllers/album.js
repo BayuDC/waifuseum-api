@@ -48,9 +48,13 @@ module.exports = {
      */
     async index(req, res) {
         const user = req.user;
-        const { visibility } = req.query;
-        let albums = [];
+        const { visibility, admin } = req.query;
 
+        if (admin && user.abilities.includes('album-admin')) {
+            return res.json({ albums: await Album.find() });
+        }
+
+        let albums = [];
         switch (visibility) {
             case 'public':
                 albums = await Album.find({ private: false }).select('-private');
