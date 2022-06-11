@@ -18,7 +18,7 @@ module.exports = {
 
             let canModify, canAccess;
 
-            if (!album.private) canAccess == true;
+            if (!album.private) canAccess = true;
             if (album.createdBy.id == user.id || user.abilities.includes('album-admin')) {
                 (canModify = true), (canAccess = true);
             }
@@ -121,7 +121,8 @@ module.exports = {
      */
     async update(req, res, next) {
         const { name, slug } = req.body;
-        const { album, canModify } = req.data;
+        const { canModify } = req.data;
+        let { album } = req.data;
 
         try {
             if (!canModify) throw createError(403, 'You are not allowed to update this album');
