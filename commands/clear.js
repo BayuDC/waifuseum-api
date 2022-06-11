@@ -2,6 +2,7 @@ const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: 'clear',
+    admin: true,
     /** @param {import('discord.js').Message} message */
     /** @param {String[]} args */
     async execute(message, ...args) {
