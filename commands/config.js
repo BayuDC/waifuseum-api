@@ -4,6 +4,7 @@ const config = require('../config.json');
 
 module.exports = {
     name: 'config',
+    owner: true,
     /** @param {import('discord.js').Message} message */
     async execute(message, key, value) {
         if (!key) {
@@ -24,6 +25,10 @@ module.exports = {
                 break;
             case 'parent':
                 config.parent = value;
+            case 'owner':
+                config.owner = value;
+            case 'admin':
+                config.admin = value;
                 break;
             default:
                 return await message.channel.send('Nothing updated');

@@ -11,12 +11,12 @@ module.exports = {
     async load(req, res, next, id) {
         try {
             const user = await User.findById(id);
-            if (!user) throw undefined;
+            if (!user) throw createError(404, 'User not found');
 
             req.data = { user };
             next();
         } catch (err) {
-            next(createError(404, 'User not found'));
+            next(err);
         }
     },
     /**
@@ -78,6 +78,10 @@ module.exports = {
     async destroy(req, res, next) {
         try {
             const { user } = req.data;
+
+            if (user.id == req.user.id) {
+                throw createError(409, 'You can not delete yourself');
+            }
 
             await User.findByIdAndDelete(user.id);
 

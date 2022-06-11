@@ -11,21 +11,13 @@ module.exports = {
     async load(req, res, next, id) {
         try {
             const album = await Album.findById(id);
-            if (!album) throw undefined;
+            if (!album) throw createError(404, 'Album not found');
 
             req.album = album;
             return next();
-        } catch (error) {
-            next(createError(404, 'Album not found'));
+        } catch (err) {
+            next(err);
         }
-    },
-    /**
-     * @param {import('express').Request} req
-     * @param {import('express').Response} res
-     */
-    async index(req, res) {
-        const albums = await Album.find();
-        res.json({ albums });
     },
     /**
      * @param {import('express').Request} req
@@ -41,6 +33,14 @@ module.exports = {
             },
         });
     },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async index(req, res) {
+        const albums = await Album.find();
+        res.json({ albums });
+    },
 
     /**
      * @param {import('express').Request} req
@@ -51,7 +51,7 @@ module.exports = {
         const { name, slug } = req.body;
 
         try {
-            const channel = await req.app.dbServer.channels.create(slug);
+            const channel = await req.app.dbServer.channels.create('🌸・' + slug);
             await channel.setParent(req.app.dbParent.id);
 
             const album = await Album.create({ name, slug, channelId: channel.id });
@@ -60,8 +60,8 @@ module.exports = {
             res.status(201).json({
                 album: album.toJSON(),
             });
-        } catch {
-            next(createError(400, 'Unknown error'));
+        } catch (err) {
+            next(err);
         }
     },
     /**
@@ -78,14 +78,14 @@ module.exports = {
 
             if (slug) {
                 const channel = await req.app.dbChannels.get(album.id);
-                await channel.setName(slug);
+                await channel.setName('🌸・' + slug);
             }
 
             res.json({
                 album: album.toJSON(),
             });
-        } catch {
-            next(createError(400, 'Unknown error'));
+        } catch (err) {
+            next(err);
         }
     },
     /**
@@ -96,14 +96,18 @@ module.exports = {
     async destroy(req, res, next) {
         try {
             const album = req.album;
+            if (await album.picturesCount) {
+                throw createError(409, 'Album is not empty');
+            }
+
             const channel = await req.app.dbChannels.get(album.id);
 
             await Album.findByIdAndDelete(album.id);
             await channel?.delete();
 
             res.status(204).send();
-        } catch {
-            next(createError(400, 'Unknown error'));
+        } catch (err) {
+            next(err);
         }
     },
 };
