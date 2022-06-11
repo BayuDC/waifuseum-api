@@ -16,13 +16,14 @@ module.exports = {
             const album = await Album.findById(id).populate('createdBy');
             if (!album) throw createError(404, 'Album not found');
 
-            if (album.private && !user.abilities.includes('album-admin')) {
-                if (album.createdBy.id != user.id) {
-                    throw createError(403, 'You are not allowed to access this album');
-                }
+            let canModify, canAccess;
+
+            if (!album.private) canAccess == true;
+            if (album.createdBy.id == user.id || user.abilities.includes('album-admin')) {
+                (canModify = true), (canAccess = true);
             }
 
-            req.data = { album };
+            req.data = { album, canAccess, canModify };
             next();
         } catch (err) {
             next(err);
@@ -31,16 +32,23 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async show(req, res) {
-        const { album } = req.data;
+    async show(req, res, next) {
+        try {
+            const { album, canAccess } = req.data;
 
-        res.json({
-            album: {
-                ...album.toJSON(),
-                picturesCount: await album.picturesCount,
-            },
-        });
+            if (!canAccess) throw createError(403, 'You are not allowed to see this album');
+
+            res.json({
+                album: {
+                    ...album.toJSON(),
+                    picturesCount: await album.picturesCount,
+                },
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     /**
      * @param {import('express').Request} req
@@ -113,9 +121,11 @@ module.exports = {
      */
     async update(req, res, next) {
         const { name, slug } = req.body;
-        const { album } = req.data;
+        const { album, canModify } = req.data;
 
         try {
+            if (!canModify) throw createError(403, 'You are not allowed to update this album');
+
             album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
 
             if (slug) {
@@ -136,9 +146,12 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        try {
-            const { album } = req.data;
+        const { album, canModify } = req.data;
 
+        try {
+            if (!canModify) {
+                throw createError(403, 'You are not allowed to delete this album');
+            }
             if (await album.picturesCount) {
                 throw createError(409, 'Album is not empty');
             }
