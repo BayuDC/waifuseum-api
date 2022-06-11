@@ -48,13 +48,19 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, slug } = req.body;
+        const { name, slug, private } = req.body;
 
         try {
             const channel = await req.app.dbServer.channels.create('🌸・' + slug);
             await channel.setParent(req.app.dbParent.id);
 
-            const album = await Album.create({ name, slug, channelId: channel.id });
+            const album = await Album.create({
+                name,
+                slug,
+                private,
+                channelId: channel.id,
+                createdBy: req.user.id,
+            });
             req.app.dbChannels.set(album.id, channel);
 
             res.status(201).json({

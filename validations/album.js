@@ -25,9 +25,11 @@ module.exports = {
                 .customSanitizer(() => value)
                 .run(req);
         }),
+        body('private').optional().toBoolean(),
     ],
     update: [
         body('name').optional().trim(),
+        body('private').optional().toBoolean(),
         body('slug')
             .trim()
             .optional()
