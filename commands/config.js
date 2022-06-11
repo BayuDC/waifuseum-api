@@ -1,5 +1,5 @@
-const fs = require('fs/promises');
 const { MessageEmbed } = require('discord.js');
+const fs = require('fs/promises');
 const config = require('../config.json');
 
 module.exports = {
@@ -31,10 +31,24 @@ module.exports = {
                 config.admin = value;
                 break;
             default:
-                return await message.channel.send('Nothing updated');
+                return await message.channel.send({
+                    embeds: [
+                        new MessageEmbed({
+                            color: '#36AE7C',
+                            description: `:white_check_mark: Nothing updated`,
+                        }),
+                    ],
+                });
         }
 
         await fs.writeFile('./config.json', JSON.stringify(config, null, 2), 'utf8');
-        await message.channel.send(`The value of \`${key}\` is now \`${value}\``);
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    color: '#47B5FF',
+                    description: `:white_check_mark: The value of \`${key}\` is now \`${value}\``,
+                }),
+            ],
+        });
     },
 };
