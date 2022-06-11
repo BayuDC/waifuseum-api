@@ -32,26 +32,26 @@ _Server Boost_ is needed to increase the maximum file size limit.
 
 Base url: https://waifuseum.herokuapp.com
 
-| Path             | Method | Body or Query                              |
-| ---------------- | ------ | ------------------------------------------ |
-| `/`              | GET    | -                                          |
-| `/pictures`      | GET    | `?count` `?full` `?album`                  |
-| `/pictures/all`  | GET    | `?count` `?full ` `?album` `?page`         |
-| `/pictures/<id>` | GET    | -                                          |
-| `/pictures`      | POST   | `{ file/fileUrl, album, source? }`         |
-| `/pictures/<id>` | PUT    | `{ file/fileUrl?, album?, source? }`       |
-| `/pictures/<id>` | DELETE | -                                          |
-| `/albums`        | GET    | -                                          |
-| `/albums/<id>`   | GET    | -                                          |
-| `/albums`        | POST   | `{ name, slug? }`                          |
-| `/albums/<id>`   | PUT    | `{ name?, slug? }`                         |
-| `/albums/<id>`   | DELETE | -                                          |
-| `/auth`          | GET    | -                                          |
-| `/auth/me`       | GET    | -                                          |
-| `/auth/login`    | POST   | `{ email, password }`                      |
-| `/auth/logout`   | POST   | -                                          |
-| `/users`         | GET    | `?full`                                    |
-| `/users/<id>`    | GET    | -                                          |
-| `/users`         | POST   | `{ name, email, password, abilities }`     |
-| `/users/<id>`    | PUT    | `{ name?, email?, password?, abilities? }` |
-| `/users/<id>`    | DELETE | -                                          |
+| Path             | Method | Body or Query                                      |
+| ---------------- | ------ | -------------------------------------------------- |
+| `/`              | GET    | -                                                  |
+| `/pictures`      | GET    | `?count` `?full` `?album` `?mine`                  |
+| `/pictures/all`  | GET    | `?count` `?full` `?album` `?mine` `?page` `?admin` |
+| `/pictures/<id>` | GET    | -                                                  |
+| `/pictures`      | POST   | `{ file/fileUrl, album, source? }`                 |
+| `/pictures/<id>` | PUT    | `{ file/fileUrl?, album?, source? }`               |
+| `/pictures/<id>` | DELETE | -                                                  |
+| `/albums`        | GET    | `?visibility` `?admin`                             |
+| `/albums/<id>`   | GET    | -                                                  |
+| `/albums`        | POST   | `{ name, slug?, private }`                         |
+| `/albums/<id>`   | PUT    | `{ name?, slug? }`                                 |
+| `/albums/<id>`   | DELETE | -                                                  |
+| `/auth`          | GET    | -                                                  |
+| `/auth/me`       | GET    | -                                                  |
+| `/auth/login`    | POST   | `{ email, password }`                              |
+| `/auth/logout`   | POST   | -                                                  |
+| `/users`         | GET    | `?full`                                            |
+| `/users/<id>`    | GET    | -                                                  |
+| `/users`         | POST   | `{ name, email, password, abilities }`             |
+| `/users/<id>`    | PUT    | `{ name?, email?, password?, abilities? }`         |
+| `/users/<id>`    | DELETE | -                                                  |
