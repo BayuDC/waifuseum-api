@@ -12,11 +12,18 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const album = await Album.findById(id);
+            const user = req.user;
+            const album = await Album.findById(id).populate('createdBy');
             if (!album) throw createError(404, 'Album not found');
 
-            req.album = album;
-            return next();
+            if (album.private && !user.abilities.includes('album-admin')) {
+                if (album.createdBy.id != user.id) {
+                    throw createError(403, 'You are not allowed to access this album');
+                }
+            }
+
+            req.data = { album };
+            next();
         } catch (err) {
             next(err);
         }
@@ -26,7 +33,7 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async show(req, res) {
-        const album = req.album;
+        const { album } = req.data;
 
         res.json({
             album: {
@@ -88,7 +95,7 @@ module.exports = {
      */
     async update(req, res, next) {
         const { name, slug } = req.body;
-        let album = req.album;
+        const { album } = req.data;
 
         try {
             album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
@@ -112,7 +119,8 @@ module.exports = {
      */
     async destroy(req, res, next) {
         try {
-            const album = req.album;
+            const { album } = req.data;
+
             if (await album.picturesCount) {
                 throw createError(409, 'Album is not empty');
             }
