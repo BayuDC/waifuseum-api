@@ -67,6 +67,10 @@ module.exports = next => {
         });
         client.guilds.fetch(server).then(guild => Object.assign(client.dbServer, guild));
         client.channels.fetch(parent).then(channel => Object.assign(client.dbParent, channel));
+        client.user.setActivity({
+            type: 'PLAYING',
+            name: 'with your waifu',
+        });
 
         next(client);
     });
