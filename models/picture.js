@@ -7,6 +7,7 @@ const schema = new mongoose.Schema(
         messageId: { type: String, required: true },
         album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
         createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now },
     },
     {
         versionKey: false,
@@ -79,6 +80,10 @@ schema.method('toJSON', function () {
         ...{ id: this._id, url: this.url, source: this.source },
         ...(this.album ? { album: this.album.toJSON() } : {}),
     };
+});
+schema.pre('save', function (next) {
+    this.updatedAt = Date.now();
+    next();
 });
 
 module.exports = mongoose.model('Picture', schema);
