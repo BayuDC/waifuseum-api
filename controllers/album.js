@@ -12,18 +12,10 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const user = req.user;
-            const album = await Album.findById(id).populate('createdBy');
+            const album = await Album.findById(id);
             if (!album) throw createError(404, 'Album not found');
 
-            let canModify, canAccess;
-
-            if (!album.private) canAccess = true;
-            if (album.createdBy.id == user.id || user.abilities.includes('album-admin')) {
-                (canModify = true), (canAccess = true);
-            }
-
-            req.data = { album, canAccess, canModify };
+            req.data = { album };
             next();
         } catch (err) {
             next(err);
@@ -36,9 +28,14 @@ module.exports = {
      */
     async show(req, res, next) {
         try {
-            const { album, canAccess } = req.data;
+            const { album } = req.data;
 
-            if (!canAccess) throw createError(403, 'You are not allowed to see this album');
+            if (
+                album.private &&
+                (album.createdBy.toString() != req.user.id || !req.user.abilities.includes('manage-album'))
+            ) {
+                throw createError(403);
+            }
 
             res.json({
                 album: {
