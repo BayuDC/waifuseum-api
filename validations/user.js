@@ -1,13 +1,14 @@
 const { body, query } = require('express-validator');
+const validate = require('../middlewares/validate');
 const User = require('../models/user');
 
 module.exports = {
-    index: [
+    index: validate([
         query('full')
             .if(query('full').exists())
             .customSanitizer(() => 1),
-    ],
-    store: [
+    ]),
+    store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('email')
             .notEmpty()
@@ -20,8 +21,8 @@ module.exports = {
             }),
         body('password').notEmpty().withMessage('Password is required'),
         body('abilities').optional().isArray().withMessage('Abilities must be in array format'),
-    ],
-    update: [
+    ]),
+    update: validate([
         body('name').optional().trim().default(undefined),
         body('email')
             .optional()
@@ -33,5 +34,5 @@ module.exports = {
                 if (await User.exists({ email: value })) throw new Error('Email already registered');
             }),
         body('abilities').optional().isArray().withMessage('Abilities must be in array format'),
-    ],
+    ]),
 };

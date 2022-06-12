@@ -1,16 +1,17 @@
 const { check, body, query } = require('express-validator');
+const validate = require('../middlewares/validate');
 const Album = require('../models/album');
 
 module.exports = {
-    index: [
+    index: validate([
         query('visibility').optional().trim(),
         query('admin')
             .if(query('admin').exists())
             .customSanitizer((_, { req }) => {
                 return req.user.abilities.includes('album-admin');
             }),
-    ],
-    store: [
+    ]),
+    store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('slug')
             .trim()
@@ -34,8 +35,8 @@ module.exports = {
                 .run(req);
         }),
         body('private').optional().toBoolean(),
-    ],
-    update: [
+    ]),
+    update: validate([
         body('name').optional().trim(),
         body('private').optional().toBoolean(),
         body('slug')
@@ -43,5 +44,5 @@ module.exports = {
             .optional()
             .matches(/^[a-z0-9\-\_]+$/i)
             .withMessage('Invalid slug format'),
-    ],
+    ]),
 };
