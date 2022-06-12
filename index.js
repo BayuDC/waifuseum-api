@@ -1,5 +1,5 @@
 require('./core/db')(() => {
-    require('./core/bot')(bot => {
-        require('./core/app')(bot);
+    require('./core/bot')(data => {
+        require('./core/app')(data);
     });
 });

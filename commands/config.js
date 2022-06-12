@@ -25,10 +25,13 @@ module.exports = {
                 break;
             case 'parent':
                 config.parent = value;
+                break;
             case 'owner':
                 config.owner = value;
+                break;
             case 'admin':
                 config.admin = value;
+                break;
             case 'worker':
                 config.worker = value;
                 break;

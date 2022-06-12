@@ -1,33 +1,22 @@
 const router = require('express').Router();
-const validate = require('../middlewares/validate');
-const { guard, gate } = require('../middlewares/auth');
+const { guard, gate, can, own } = require('../middlewares/auth');
 
 const controller = require('../controllers/picture');
-const middleware = require('../middlewares/picture');
 const validation = require('../validations/picture');
+const { upload, download } = require('../middlewares/picture');
 
 router.param('id', controller.load);
 
-router.get('/', validate(validation.index), controller.index);
-router.get('/all', validate(validation.index), controller.indexAll);
+router.get('/', validation.index, controller.index);
+router.get('/all', validation.index, controller.indexAll);
 router.get('/:id', controller.show);
 
-router.post('/', [
-    guard(),
-    gate('picture-access'),
-    middleware.upload,
-    middleware.download,
-    validate(validation.store),
-    controller.store,
-]);
-router.put('/:id', [
-    guard(),
-    gate('picture-access'),
-    middleware.upload,
-    middleware.download,
-    validate(validation.update),
-    controller.update,
-]);
-router.delete('/:id', guard(), gate('picture-access'), controller.destroy);
+router.use(guard());
+router.post('/', upload, download, validation.store, controller.store);
+
+router.use('/:id', own('picture'), can('manage-picture'), gate());
+
+router.put('/:id', upload, download, validation.update, controller.update);
+router.delete('/:id', controller.destroy);
 
 module.exports = router;

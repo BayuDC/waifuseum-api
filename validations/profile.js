@@ -1,8 +1,9 @@
 const { body } = require('express-validator');
+const validate = require('../middlewares/validate');
 const User = require('../models/user');
 
 module.exports = {
-    password: [
+    password: validate([
         body('oldPassword')
             .notEmpty()
             .withMessage('Current password is required')
@@ -14,5 +15,5 @@ module.exports = {
                 }
             }),
         body('newPassword').notEmpty().withMessage('New password is required'),
-    ],
+    ]),
 };

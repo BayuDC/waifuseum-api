@@ -1,3 +1,4 @@
+const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
 const User = require('../models/user');
 
@@ -10,10 +11,10 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const user = await User.findById(id);
+            const user = isValidObjectId(id) && (await User.findById(id));
             if (!user) throw createError(404, 'User not found');
 
-            req.data = { user };
+            req.data.user = user;
             next();
         } catch (err) {
             next(err);
@@ -63,7 +64,7 @@ module.exports = {
             let { user } = req.data;
             const { name, email, abilities } = req.body;
 
-            user = await User.findByIdAndUpdate(user.id, { name, email, password, abilities }, { new: true });
+            user = await User.findByIdAndUpdate(user.id, { name, email, abilities }, { new: true });
 
             res.json({ user: user.toJSON() });
         } catch (err) {

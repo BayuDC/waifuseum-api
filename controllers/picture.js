@@ -16,14 +16,8 @@ module.exports = {
             if (!picture) throw createError(404, 'Picture not found');
 
             await picture.populate('album');
-            let canModify, canAccess;
+            req.data.picture = picture;
 
-            if (!picture.album.private) canAccess = true;
-            if (picture.album.createdBy.toString() == user.id || user.abilities.includes('picture-admin')) {
-                (canModify = true), (canAccess = true);
-            }
-
-            req.data = { picture, canModify, canAccess };
             next();
         } catch (err) {
             next(err);
@@ -35,9 +29,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async show(req, res, next) {
-        const { picture, canAccess } = req.data;
+        const { picture } = req.data;
         try {
-            if (!canAccess) throw createError(403, 'You are not allowed to see this picture');
+            if (
+                picture.album.private &&
+                picture.createdBy.toString() != req.user.id &&
+                !req.user.abilities.includes('manage-album')
+            ) {
+                throw createError(403);
+            }
 
             res.json({ picture: picture.toJSON() });
         } catch (err) {
@@ -91,17 +91,23 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { body, file } = req;
+        const { body, file, user } = req;
         const { album, source } = body;
 
         try {
-            const channel = req.app.dbChannels.get(album.id);
+            const channel = req.app.data.channels.get(album.id);
+            const message = await channel.send({ files: [file.path] });
 
-            const picture = await Picture.createAndUpload(channel, {
-                file,
-                album,
+            const picture = await Picture.create({
+                url: message.attachments.first().url,
+                messageId: message.id,
+                createdBy: user.id,
+                album: album.id,
                 source,
             });
+            picture.album = album;
+
+            await message.edit({ content: `\`${picture.id}\`` });
 
             res.status(201).json({ picture: picture.toJSON() });
         } catch (err) {
@@ -121,15 +127,13 @@ module.exports = {
      */
     async update(req, res, next) {
         const { album, source } = req.body;
-        const { picture, canModify } = req.data;
+        const { picture } = req.data;
         const file = req.file;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to update this picture');
-
             if (album || file) {
-                const channel = req.app.dbChannels.get(album?.id || picture.album.id);
-                const message = await (album ? req.app.dbChannels.get(picture.album.id) : channel).messages
+                const channel = req.app.data.channels.get(album?.id || picture.album.id);
+                const message = await (album ? req.app.data.channels.get(picture.album.id) : channel).messages
                     .fetch(picture.messageId)
                     .catch(() => {});
 
@@ -156,12 +160,10 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        const { picture, canModify } = req.data;
+        const { picture } = req.data;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to delete this picture');
-
-            const channel = req.app.dbChannels.get(picture.album.id);
+            const channel = req.app.data.channels.get(picture.album.id);
             const message = await channel.messages.fetch(picture.messageId).catch(() => {});
 
             await Picture.deleteOne(picture);

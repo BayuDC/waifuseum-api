@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(auth());
 
+app.use((req, res, next) => ((req.data = {}), next()));
 app.use('/', require('../routes/main'));
 app.use('/auth', require('../routes/auth'));
 app.use('/profile', require('../routes/profile'));
@@ -24,12 +25,10 @@ app.use('/albums', require('../routes/album'));
 app.use(error.notFound);
 app.use(error.handle);
 
-module.exports = bot => {
+module.exports = data => {
     app.listen(port, () => {
         console.log('App running at port', port);
 
-        app.dbServer = bot.dbServer;
-        app.dbParent = bot.dbParent;
-        app.dbChannels = bot.dbChannels;
+        app.data = data;
     });
 };

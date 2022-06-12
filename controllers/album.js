@@ -1,3 +1,4 @@
+const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
 const Album = require('../models/album');
 const User = require('../models/user');
@@ -12,18 +13,10 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const user = req.user;
-            const album = await Album.findById(id).populate('createdBy');
+            const album = isValidObjectId(id) && (await Album.findById(id));
             if (!album) throw createError(404, 'Album not found');
 
-            let canModify, canAccess;
-
-            if (!album.private) canAccess = true;
-            if (album.createdBy.id == user.id || user.abilities.includes('album-admin')) {
-                (canModify = true), (canAccess = true);
-            }
-
-            req.data = { album, canAccess, canModify };
+            req.data.album = album;
             next();
         } catch (err) {
             next(err);
@@ -35,10 +28,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async show(req, res, next) {
+        const { album } = req.data;
         try {
-            const { album, canAccess } = req.data;
-
-            if (!canAccess) throw createError(403, 'You are not allowed to see this album');
+            if (
+                album.private &&
+                album.createdBy.toString() != req.user.id &&
+                !req.user.abilities.includes('manage-album')
+            ) {
+                throw createError(403);
+            }
 
             res.json({
                 album: {
@@ -55,26 +53,49 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        const user = req.user;
-        const { visibility, admin } = req.query;
+        const { community, private } = req.query;
+        try {
+            const albums = await Album.find({
+                ...{ private: false },
+                ...(private && { private: true }),
+                ...(community && { community: true }),
+            }).sort({ createdAt: 'desc' });
 
-        if (admin && user.abilities.includes('album-admin')) {
-            return res.json({ albums: await Album.find() });
+            res.json({ albums });
+        } catch (err) {
+            next(err);
         }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async indexMine(req, res) {
+        const { community, private } = req.query;
+        try {
+            const albums = await Album.find({
+                ...{ createdBy: req.user.id },
+                ...(private && { private: true }),
+                ...(community && { community: true }),
+            }).sort({ createdAt: 'desc' });
 
-        let albums = [];
-        switch (visibility) {
-            case 'public':
-                albums = await Album.find({ private: false }).select('-private');
-                break;
-            case 'private':
-                albums = await Album.find({ private: true, createdBy: user.id }).select('-private');
-                break;
-            default:
-                albums = await Album.find({ $or: [{ private: false }, { createdBy: user.id }] });
+            res.json({ albums });
+        } catch (err) {
+            next(err);
         }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async indexAll(req, res) {
+        try {
+            const albums = await Album.find().sort({ createdAt: 'desc' });
 
-        res.json({ albums });
+            res.json({ albums });
+        } catch (err) {
+            next(err);
+        }
     },
 
     /**
@@ -83,15 +104,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, slug, private } = req.body;
+        const { name, slug, private, community } = req.body;
 
         try {
             /** @type {import('discord.js').Guild} guild */
-            const guild = req.app.dbServer;
+            const guild = req.app.data.server;
             /** @type {import('discord.js').TextChannel} channel */
             const channel = await guild.channels.create('🌸・' + slug, { parent: parentId });
 
-            if (private) {
+            if (private && !community) {
                 const ownerId = (await User.findById(req.user.id)).discordId;
                 const owner = ownerId ? await guild.members.fetch(ownerId) : undefined;
 
@@ -104,8 +125,15 @@ module.exports = {
                 ]);
             }
 
-            const album = await Album.create({ name, slug, private, channelId: channel.id, createdBy: req.user.id });
-            req.app.dbChannels.set(album.id, channel);
+            const album = await Album.create({
+                name,
+                slug,
+                private: community ? false : private,
+                community,
+                channelId: channel.id,
+                createdBy: req.user.id,
+            });
+            req.app.data.channels.set(album.id, channel);
 
             res.status(201).json({
                 album: album.toJSON(),
@@ -121,16 +149,13 @@ module.exports = {
      */
     async update(req, res, next) {
         const { name, slug } = req.body;
-        const { canModify } = req.data;
         let { album } = req.data;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to update this album');
-
             album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
 
             if (slug) {
-                const channel = await req.app.dbChannels.get(album.id);
+                const channel = await req.app.data.channels.get(album.id);
                 await channel.setName('🌸・' + slug);
             }
 
@@ -147,17 +172,14 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        const { album, canModify } = req.data;
+        const { album } = req.data;
 
         try {
-            if (!canModify) {
-                throw createError(403, 'You are not allowed to delete this album');
-            }
             if (await album.picturesCount) {
                 throw createError(409, 'Album is not empty');
             }
 
-            const channel = await req.app.dbChannels.get(album.id);
+            const channel = await req.app.data.channels.get(album.id);
 
             await Album.findByIdAndDelete(album.id);
             await channel?.delete();
