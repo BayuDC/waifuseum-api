@@ -32,7 +32,6 @@ module.exports = {
                 if (req.data.user.email == value) return;
                 if (await User.exists({ email: value })) throw new Error('Email already registered');
             }),
-        body('password').optional().default(undefined),
         body('abilities').optional().isArray().withMessage('Abilities must be in array format'),
     ],
 };
