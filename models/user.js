@@ -7,7 +7,7 @@ const schema = new mongoose.Schema(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         abilities: { type: Array, default: [] },
-        discordId: { type: String, unique: true },
+        discordId: { type: String },
         token: { type: String },
     },
     {
