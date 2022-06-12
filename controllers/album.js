@@ -83,15 +83,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, slug, private } = req.body;
+        const { name, slug, private, comunity } = req.body;
 
         try {
             /** @type {import('discord.js').Guild} guild */
-            const guild = req.app.dbServer;
+            const guild = req.app.data.server;
             /** @type {import('discord.js').TextChannel} channel */
             const channel = await guild.channels.create('🌸・' + slug, { parent: parentId });
 
-            if (private) {
+            if (private && !comunity) {
                 const ownerId = (await User.findById(req.user.id)).discordId;
                 const owner = ownerId ? await guild.members.fetch(ownerId) : undefined;
 
@@ -104,8 +104,15 @@ module.exports = {
                 ]);
             }
 
-            const album = await Album.create({ name, slug, private, channelId: channel.id, createdBy: req.user.id });
-            req.app.dbChannels.set(album.id, channel);
+            const album = await Album.create({
+                name,
+                slug,
+                private: comunity ? false : private,
+                comunity,
+                channelId: channel.id,
+                createdBy: req.user.id,
+            });
+            req.app.data.channels.set(album.id, channel);
 
             res.status(201).json({
                 album: album.toJSON(),

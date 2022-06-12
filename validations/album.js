@@ -22,12 +22,12 @@ module.exports = {
             value =
                 value ||
                 req.body.name
-                    .toLowerCase()
+                    ?.toLowerCase()
                     .replace(/\s/g, '-')
                     .replace(/[^a-z0-9\-\_]/g, '');
 
             if (await Album.exists({ slug: value })) {
-                throw new Error('Slug already exists');
+                throw new Error('Slug was taken');
             }
 
             check('slug')
@@ -35,6 +35,7 @@ module.exports = {
                 .run(req);
         }),
         body('private').optional().toBoolean(),
+        body('comunity').optional().toBoolean(),
     ]),
     update: validate([
         body('name').optional().trim(),
@@ -44,5 +45,21 @@ module.exports = {
             .optional()
             .matches(/^[a-z0-9\-\_]+$/i)
             .withMessage('Invalid slug format'),
+        body('slug').custom(async (value, { req }) => {
+            value =
+                value ||
+                req.body.name
+                    ?.toLowerCase()
+                    .replace(/\s/g, '-')
+                    .replace(/[^a-z0-9\-\_]/g, '');
+
+            if (await Album.exists({ slug: value })) {
+                throw new Error('Slug was taken');
+            }
+
+            check('slug')
+                .customSanitizer(() => value)
+                .run(req);
+        }),
     ]),
 };

@@ -9,9 +9,12 @@ router.param('id', controller.load);
 router.get('/', validation.index, controller.index);
 router.get('/:id', controller.show);
 
-router.use(guard(), gate('manage-album'));
+router.use(guard());
 
 router.post('/', validation.store, controller.store);
+
+router.use(gate('manage-album'));
+
 router.put('/:id', validation.update, controller.update);
 router.delete('/:id', controller.destroy);
 

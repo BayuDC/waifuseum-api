@@ -26,6 +26,7 @@ schema.method('toJSON', function () {
         name: this.name,
         slug: this.slug,
         private: this.private,
+        comunity: this.comunity,
     };
 });
 schema.pre('save', function (next) {
