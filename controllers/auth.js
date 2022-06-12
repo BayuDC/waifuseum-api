@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
 const User = require('../models/user');
 const createError = require('http-errors');
 
-const generateAccessToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-const generateRefreshToken = payload => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+const secret = process.env.JWT_SECRET;
 
 module.exports = {
     /**
@@ -20,23 +17,18 @@ module.exports = {
             const user = await User.findOne({ email });
             if (!user) throw createError(404, 'User not found');
 
-            const auth = await bcrypt.compare(password || '', user.password);
+            const auth = await user.comparePassword(password);
             if (!auth) throw createError(401, 'Password is incorrect');
 
-            const token = crypto.randomBytes(32).toString('hex');
+            const token = await user.generateToken();
 
-            const accessToken = generateAccessToken(user.toJSON());
-            const refreshToken = generateRefreshToken({ secret: token });
-
-            user.token = token;
-            await user.save();
+            const accessToken = jwt.sign(user.toJSON(), secret, { expiresIn: '1h' });
+            const refreshToken = jwt.sign({ secret: token }, secret, { expiresIn: '7d' });
 
             res.cookie('access_token', accessToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
             res.cookie('refresh_token', refreshToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 });
 
-            res.status(201).json({
-                message: 'Login success',
-            });
+            res.status(201).json({ message: 'Login success' });
         } catch (err) {
             next(err);
         }
@@ -47,14 +39,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async logout(req, res, next) {
-        const user = req.user;
-        await User.findByIdAndUpdate(user.id, { token: '' });
+        try {
+            await User.findByIdAndUpdate(req.user.id, { token: '' });
 
-        res.clearCookie('access_token');
-        res.clearCookie('refresh_token');
+            res.clearCookie('access_token');
+            res.clearCookie('refresh_token');
 
-        res.status(200).json({
-            message: 'Logout success',
-        });
+            res.status(200).json({ message: 'Logout success' });
+        } catch (err) {
+            next(err);
+        }
     },
 };

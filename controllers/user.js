@@ -61,7 +61,7 @@ module.exports = {
     async update(req, res, next) {
         try {
             let { user } = req.data;
-            const { name, email, password, abilities } = req.body;
+            const { name, email, abilities } = req.body;
 
             user = await User.findByIdAndUpdate(user.id, { name, email, password, abilities }, { new: true });
 

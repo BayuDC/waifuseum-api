@@ -8,11 +8,11 @@ const validation = require('../validations/user');
 router.use(guard());
 router.param('id', controller.load);
 
-router.get('/', gate('user-read'), validate(validation.index), controller.index);
-router.get('/:id', gate('user-read'), controller.show);
+router.get('/', gate('manage-user'), validate(validation.index), controller.index);
+router.get('/:id', gate('manage-user'), controller.show);
 
-router.post('/', gate('user-write'), validate(validation.store), controller.store);
-router.put('/:id', gate('user-write'), validate(validation.update), controller.update);
-router.delete('/:id', gate('user-write'), controller.destroy);
+router.post('/', gate('manage-user'), validate(validation.store), controller.store);
+router.put('/:id', gate('manage-user'), validate(validation.update), controller.update);
+router.delete('/:id', gate('manage-user'), controller.destroy);
 
 module.exports = router;

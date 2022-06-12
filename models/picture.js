@@ -6,6 +6,7 @@ const schema = new mongoose.Schema(
         source: { type: String, required: false },
         messageId: { type: String, required: true },
         album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
+        createdBy: { type: mongoose.mongo.ObjectId, ref: 'User', required: true },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
     },
