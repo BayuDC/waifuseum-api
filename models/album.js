@@ -5,7 +5,7 @@ const schema = new mongoose.Schema(
         name: { type: String, required: true },
         slug: { type: String, required: true, unique: true },
         private: { type: Boolean, default: false },
-        comunity: { type: Boolean, default: false },
+        community: { type: Boolean, default: false },
         channelId: { type: String, required: true },
         pictures: [{ type: mongoose.mongo.ObjectId, ref: 'Picture' }],
         createdBy: { type: mongoose.mongo.ObjectId, ref: 'User' },
@@ -26,7 +26,7 @@ schema.method('toJSON', function () {
         name: this.name,
         slug: this.slug,
         private: this.private,
-        comunity: this.comunity,
+        community: this.community,
     };
 });
 schema.pre('save', function (next) {

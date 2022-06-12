@@ -4,7 +4,12 @@ const Album = require('../models/album');
 
 module.exports = {
     index: validate([
-        // TODO
+        query('community')
+            .optional()
+            .customSanitizer(() => true),
+        query('private')
+            .optional()
+            .customSanitizer(() => true),
     ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
@@ -30,7 +35,7 @@ module.exports = {
                 .run(req);
         }),
         body('private').optional().toBoolean(),
-        body('comunity').optional().toBoolean(),
+        body('community').optional().toBoolean(),
     ]),
     update: validate([
         body('name').optional().trim(),

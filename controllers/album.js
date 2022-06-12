@@ -1,3 +1,4 @@
+const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
 const Album = require('../models/album');
 const User = require('../models/user');
@@ -12,10 +13,10 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const album = await Album.findById(id);
+            const album = isValidObjectId(id) && (await Album.findById(id));
             if (!album) throw createError(404, 'Album not found');
 
-            req.data = { album };
+            req.data.album = album;
             next();
         } catch (err) {
             next(err);
@@ -52,7 +53,48 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        // TODO
+        const { community } = req.query;
+        try {
+            const albums = await Album.find({
+                private: false,
+                community,
+            }).sort({ createdAt: 'desc' });
+
+            res.json({ albums });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async indexMine(req, res) {
+        const { community, private } = req.query;
+        try {
+            const albums = await Album.find({
+                createdBy: req.user.id,
+                community: community || false,
+                private: private || false,
+            }).sort({ createdAt: 'desc' });
+
+            res.json({ albums });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async indexAll(req, res) {
+        try {
+            const albums = await Album.find().sort({ createdAt: 'desc' });
+
+            res.json({ albums });
+        } catch (err) {
+            next(err);
+        }
     },
 
     /**
@@ -61,7 +103,7 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, slug, private, comunity } = req.body;
+        const { name, slug, private, community } = req.body;
 
         try {
             /** @type {import('discord.js').Guild} guild */
@@ -69,7 +111,7 @@ module.exports = {
             /** @type {import('discord.js').TextChannel} channel */
             const channel = await guild.channels.create('🌸・' + slug, { parent: parentId });
 
-            if (private && !comunity) {
+            if (private && !community) {
                 const ownerId = (await User.findById(req.user.id)).discordId;
                 const owner = ownerId ? await guild.members.fetch(ownerId) : undefined;
 
@@ -85,8 +127,8 @@ module.exports = {
             const album = await Album.create({
                 name,
                 slug,
-                private: comunity ? false : private,
-                comunity,
+                private: community ? false : private,
+                community,
                 channelId: channel.id,
                 createdBy: req.user.id,
             });

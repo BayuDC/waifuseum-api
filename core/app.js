@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(auth());
 
+app.use((req, res, next) => ((req.data = {}), next()));
 app.use('/', require('../routes/main'));
 app.use('/auth', require('../routes/auth'));
 app.use('/profile', require('../routes/profile'));
