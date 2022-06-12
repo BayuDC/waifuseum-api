@@ -36,18 +36,20 @@ const auth = () => async (req, res, next) => {
     }
 };
 const guard = () => (req, res, next) => {
-    if (!req.user) {
-        return next(createError.Unauthorized());
-    }
-
+    if (!req.user) return next(createError.Unauthorized());
     next();
 };
-const gate = ability => (req, res, next) => {
-    if (!req.user.abilities.includes(ability)) {
-        return next(createError.Forbidden());
-    }
-
+const gate = () => (req, res, next) => {
+    if (!req.data.access) return next(createError.Forbidden());
+    next();
+};
+const can = ability => (req, res, next) => {
+    req.data.access = req.data.access || req.user.abilities.includes(ability);
+    next();
+};
+const own = property => (req, res, next) => {
+    req.data.access = req.data.access || req.data[property]?.createdBy.toString() == req.user.id;
     next();
 };
 
-module.exports = { auth, guard, gate };
+module.exports = { auth, guard, gate, can, own };

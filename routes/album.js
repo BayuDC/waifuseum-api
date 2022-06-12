@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { guard, gate } = require('../middlewares/auth');
+const { guard, gate, own, can } = require('../middlewares/auth');
 
 const controller = require('../controllers/album');
 const validation = require('../validations/album');
@@ -13,9 +13,8 @@ router.use(guard());
 
 router.post('/', validation.store, controller.store);
 
-router.use(gate('manage-album'));
-
-router.put('/:id', validation.update, controller.update);
+router.use('/:id', own('album'), can('manage-album'), gate());
+router.put('/:id', /*validation.update,*/ controller.update);
 router.delete('/:id', controller.destroy);
 
 module.exports = router;

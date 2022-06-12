@@ -124,6 +124,7 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
+        return res.send();
         const { name, slug } = req.body;
         const { canModify } = req.data;
         let { album } = req.data;
@@ -151,6 +152,8 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
+        return res.send();
+
         const { album, canModify } = req.data;
 
         try {
