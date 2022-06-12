@@ -53,9 +53,12 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
+        const { community, private } = req.query;
         try {
             const albums = await Album.find({
-                private: false,
+                ...{ private: false },
+                ...(private && { private: true }),
+                ...(community && { community: true }),
             }).sort({ createdAt: 'desc' });
 
             res.json({ albums });
@@ -71,7 +74,9 @@ module.exports = {
         const { community, private } = req.query;
         try {
             const albums = await Album.find({
-                createdBy: req.user.id,
+                ...{ createdBy: req.user.id },
+                ...(private && { private: true }),
+                ...(community && { community: true }),
             }).sort({ createdAt: 'desc' });
 
             res.json({ albums });
