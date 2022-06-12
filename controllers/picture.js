@@ -127,15 +127,13 @@ module.exports = {
      */
     async update(req, res, next) {
         const { album, source } = req.body;
-        const { picture, canModify } = req.data;
+        const { picture } = req.data;
         const file = req.file;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to update this picture');
-
             if (album || file) {
-                const channel = req.app.dbChannels.get(album?.id || picture.album.id);
-                const message = await (album ? req.app.dbChannels.get(picture.album.id) : channel).messages
+                const channel = req.app.data.channels.get(album?.id || picture.album.id);
+                const message = await (album ? req.app.data.channels.get(picture.album.id) : channel).messages
                     .fetch(picture.messageId)
                     .catch(() => {});
 
@@ -162,12 +160,10 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        const { picture, canModify } = req.data;
+        const { picture } = req.data;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to delete this picture');
-
-            const channel = req.app.dbChannels.get(picture.album.id);
+            const channel = req.app.data.channels.get(picture.album.id);
             const message = await channel.messages.fetch(picture.messageId).catch(() => {});
 
             await Picture.deleteOne(picture);

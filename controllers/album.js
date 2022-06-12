@@ -72,8 +72,6 @@ module.exports = {
         try {
             const albums = await Album.find({
                 createdBy: req.user.id,
-                community: community || false,
-                private: private || false,
             }).sort({ createdAt: 'desc' });
 
             res.json({ albums });

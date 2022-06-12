@@ -39,7 +39,7 @@ module.exports = {
     ]),
     store: validate([
         body('source')
-            .if(body('source').notEmpty())
+            .optional()
             .isURL({ protocols: ['http', 'https'] })
             .withMessage('Url is not valid'),
         body('album').exists().withMessage('Album is required').bail().custom(validateAlbum),
@@ -49,9 +49,9 @@ module.exports = {
         }),
     ]),
     update: [
-        body('album').if(body('album').exists()).custom(validateAlbum),
+        body('album').optional().custom(validateAlbum),
         body('source')
-            .if(body('source').notEmpty())
+            .optional()
             .isURL({ protocols: ['http', 'https'] })
             .withMessage('Url is not valid'),
     ],

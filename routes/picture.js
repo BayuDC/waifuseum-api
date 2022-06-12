@@ -11,24 +11,12 @@ router.get('/', validation.index, controller.index);
 router.get('/all', validation.index, controller.indexAll);
 router.get('/:id', controller.show);
 
-router.post('/', guard(), upload, download, validation.store, controller.store);
+router.use(guard());
+router.post('/', upload, download, validation.store, controller.store);
 
-// router.post('/', [
-//     guard(),
-//     gate('picture-access'),
-//     middleware.upload,
-//     middleware.download,
-//     validate(validation.store),
-//     controller.store,
-// ]);
-// router.put('/:id', [
-//     guard(),
-//     gate('picture-access'),
-//     middleware.upload,
-//     middleware.download,
-//     validate(validation.update),
-//     controller.update,
-// ]);
-// router.delete('/:id', guard(), gate('picture-access'), controller.destroy);
+router.use('/:id', own('picture'), can('manage-picture'), gate());
+
+router.put('/:id', upload, download, validation.update, controller.update);
+router.delete('/:id', controller.destroy);
 
 module.exports = router;
