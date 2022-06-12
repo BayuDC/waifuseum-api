@@ -5,13 +5,13 @@ const controller = require('../controllers/picture');
 const validation = require('../validations/picture');
 const { upload, download } = require('../middlewares/picture');
 
+router.param('id', controller.load);
+
 router.get('/', validation.index, controller.index);
 router.get('/all', validation.index, controller.indexAll);
+router.get('/:id', controller.show);
+
 router.post('/', guard(), upload, download, validation.store, controller.store);
-
-// router.param('id', controller.load);
-
-// router.get('/:id', controller.show);
 
 // router.post('/', [
 //     guard(),

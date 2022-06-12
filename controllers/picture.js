@@ -16,14 +16,8 @@ module.exports = {
             if (!picture) throw createError(404, 'Picture not found');
 
             await picture.populate('album');
-            let canModify, canAccess;
+            req.data.picture = picture;
 
-            if (!picture.album.private) canAccess = true;
-            if (picture.album.createdBy.toString() == user.id || user.abilities.includes('picture-admin')) {
-                (canModify = true), (canAccess = true);
-            }
-
-            req.data = { picture, canModify, canAccess };
             next();
         } catch (err) {
             next(err);
@@ -35,9 +29,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async show(req, res, next) {
-        const { picture, canAccess } = req.data;
+        const { picture } = req.data;
         try {
-            if (!canAccess) throw createError(403, 'You are not allowed to see this picture');
+            if (
+                picture.album.private &&
+                picture.createdBy.toString() != req.user.id &&
+                !req.user.abilities.includes('manage-album')
+            ) {
+                throw createError(403);
+            }
 
             res.json({ picture: picture.toJSON() });
         } catch (err) {

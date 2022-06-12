@@ -28,12 +28,12 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async show(req, res, next) {
+        const { album } = req.data;
         try {
-            const { album } = req.data;
-
             if (
                 album.private &&
-                (album.createdBy.toString() != req.user.id || !req.user.abilities.includes('manage-album'))
+                album.createdBy.toString() != req.user.id &&
+                !req.user.abilities.includes('manage-album')
             ) {
                 throw createError(403);
             }
