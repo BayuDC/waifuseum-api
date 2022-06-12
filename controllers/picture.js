@@ -91,17 +91,23 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { body, file } = req;
+        const { body, file, user } = req;
         const { album, source } = body;
 
         try {
-            const channel = req.app.dbChannels.get(album.id);
+            const channel = req.app.data.channels.get(album.id);
+            const message = await channel.send({ files: [file.path] });
 
-            const picture = await Picture.createAndUpload(channel, {
-                file,
-                album,
+            const picture = await Picture.create({
+                url: message.attachments.first().url,
+                messageId: message.id,
+                createdBy: user.id,
+                album: album.id,
                 source,
             });
+            picture.album = album;
+
+            await message.edit({ content: `\`${picture.id}\`` });
 
             res.status(201).json({ picture: picture.toJSON() });
         } catch (err) {

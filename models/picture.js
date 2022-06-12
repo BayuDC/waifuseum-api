@@ -15,20 +15,6 @@ const schema = new mongoose.Schema(
     }
 );
 
-schema.static('createAndUpload', async function (channel, { file, album, source }) {
-    const message = await channel.send({ files: [file.path] });
-    const picture = await this.create({
-        url: message.attachments.first().url,
-        messageId: message.id,
-        album: album.id,
-        source,
-    });
-    picture.album = album;
-
-    await message.edit({ content: `\`${picture.id}\`` });
-
-    return picture;
-});
 schema.static('findRandom', async function (query, { count, full }) {
     const pictures = await this.aggregate()
         .match(query)

@@ -53,11 +53,9 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        const { community } = req.query;
         try {
             const albums = await Album.find({
                 private: false,
-                community,
             }).sort({ createdAt: 'desc' });
 
             res.json({ albums });
