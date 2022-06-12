@@ -11,9 +11,10 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-client.dbChannels = new Collection();
-client.dbServer = {};
-client.dbParent = {};
+client.data = {
+    channels: new Collection(),
+    server: undefined,
+};
 
 readdirSync('./commands').forEach(file => {
     const command = require(`../commands/` + file);
@@ -61,18 +62,14 @@ module.exports = next => {
         Album.find().then(albums => {
             albums.forEach(album => {
                 client.channels.fetch(album.channelId).then(channel => {
-                    client.dbChannels.set(album.id, channel);
+                    client.data.channels.set(album.id, channel);
                 });
             });
         });
-        client.guilds.fetch(server).then(guild => Object.assign(client.dbServer, guild));
-        client.channels.fetch(parent).then(channel => Object.assign(client.dbParent, channel));
-        client.user.setActivity({
-            type: 'PLAYING',
-            name: 'with your waifu',
-        });
+        client.guilds.fetch(server).then(guild => (client.data.server = guild));
+        client.user.setActivity({ type: 'PLAYING', name: 'with your waifu' });
 
-        next(client);
+        next(client.data);
     });
 
     client.login(token);
