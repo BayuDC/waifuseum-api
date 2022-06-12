@@ -52,26 +52,7 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        const user = req.user;
-        const { visibility, admin } = req.query;
-
-        if (admin && user.abilities.includes('album-admin')) {
-            return res.json({ albums: await Album.find() });
-        }
-
-        let albums = [];
-        switch (visibility) {
-            case 'public':
-                albums = await Album.find({ private: false }).select('-private');
-                break;
-            case 'private':
-                albums = await Album.find({ private: true, createdBy: user.id }).select('-private');
-                break;
-            default:
-                albums = await Album.find({ $or: [{ private: false }, { createdBy: user.id }] });
-        }
-
-        res.json({ albums });
+        // TODO
     },
 
     /**
@@ -124,18 +105,14 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
-        return res.send();
         const { name, slug } = req.body;
-        const { canModify } = req.data;
         let { album } = req.data;
 
         try {
-            if (!canModify) throw createError(403, 'You are not allowed to update this album');
-
             album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
 
             if (slug) {
-                const channel = await req.app.dbChannels.get(album.id);
+                const channel = await req.app.data.channels.get(album.id);
                 await channel.setName('🌸・' + slug);
             }
 
@@ -152,19 +129,14 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async destroy(req, res, next) {
-        return res.send();
-
-        const { album, canModify } = req.data;
+        const { album } = req.data;
 
         try {
-            if (!canModify) {
-                throw createError(403, 'You are not allowed to delete this album');
-            }
             if (await album.picturesCount) {
                 throw createError(409, 'Album is not empty');
             }
 
-            const channel = await req.app.dbChannels.get(album.id);
+            const channel = await req.app.data.channels.get(album.id);
 
             await Album.findByIdAndDelete(album.id);
             await channel?.delete();

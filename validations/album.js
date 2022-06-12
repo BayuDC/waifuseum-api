@@ -4,12 +4,7 @@ const Album = require('../models/album');
 
 module.exports = {
     index: validate([
-        query('visibility').optional().trim(),
-        query('admin')
-            .if(query('admin').exists())
-            .customSanitizer((_, { req }) => {
-                return req.user.abilities.includes('album-admin');
-            }),
+        // TODO
     ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
@@ -39,13 +34,13 @@ module.exports = {
     ]),
     update: validate([
         body('name').optional().trim(),
-        body('private').optional().toBoolean(),
         body('slug')
             .trim()
             .optional()
             .matches(/^[a-z0-9\-\_]+$/i)
             .withMessage('Invalid slug format'),
         body('slug').custom(async (value, { req }) => {
+            if (req.data.album.slug == value) return;
             value =
                 value ||
                 req.body.name

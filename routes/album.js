@@ -14,7 +14,7 @@ router.use(guard());
 router.post('/', validation.store, controller.store);
 
 router.use('/:id', own('album'), can('manage-album'), gate());
-router.put('/:id', /*validation.update,*/ controller.update);
+router.put('/:id', validation.update, controller.update);
 router.delete('/:id', controller.destroy);
 
 module.exports = router;
