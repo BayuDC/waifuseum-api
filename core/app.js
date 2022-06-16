@@ -5,10 +5,12 @@ const cors = require('cors');
 const { auth } = require('../middlewares/auth');
 const error = require('../middlewares/error');
 
+const config = require('../config.json').app;
+
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: config.origin }));
 app.use(cookie());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

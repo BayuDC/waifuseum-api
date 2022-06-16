@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const createError = require('http-errors');
 
+const config = require('../config.json').app;
 const secret = process.env.JWT_SECRET;
 
 module.exports = {
@@ -25,8 +26,16 @@ module.exports = {
             const accessToken = jwt.sign(user.toJSON(), secret, { expiresIn: '1h' });
             const refreshToken = jwt.sign({ secret: token }, secret, { expiresIn: '7d' });
 
-            res.cookie('access_token', accessToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
-            res.cookie('refresh_token', refreshToken, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 });
+            res.cookie('access_token', accessToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 1,
+                domain: config.domain,
+            });
+            res.cookie('refresh_token', refreshToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7,
+                domain: config.domain,
+            });
 
             res.status(201).json({ message: 'Login success' });
         } catch (err) {
