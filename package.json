@@ -1,6 +1,6 @@
 {
   "name": "waifuseum-api",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "API for storing anime picture collection in Discord server",
   "main": "index.js",
   "scripts": {
