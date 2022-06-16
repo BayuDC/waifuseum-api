@@ -1,6 +1,6 @@
 {
   "app": {
-    "domain": ".waifusuem.test",
+    "domain": ".waifuseum.test",
     "origin": "http://www.waifuseum.test"
   },
   "bot": {

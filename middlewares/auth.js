@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const createError = require('http-errors');
 
+const config = require('../config.json').app;
 const secret = process.env.JWT_SECRET;
 
 const auth = () => async (req, res, next) => {
@@ -21,8 +22,16 @@ const auth = () => async (req, res, next) => {
             const accessTokenNew = jwt.sign(user.toJSON(), secret, { expiresIn: '1h' });
             const refreshTokenNew = jwt.sign({ secret: token }, secret, { expiresIn: '7d' });
 
-            res.cookie('access_token', accessTokenNew, { httpOnly: true, maxAge: 1000 * 60 * 60 * 1 });
-            res.cookie('refresh_token', refreshTokenNew, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 });
+            res.cookie('access_token', accessTokenNew, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 1,
+                domain: config.domain,
+            });
+            res.cookie('refresh_token', refreshTokenNew, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7,
+                domain: config.domain,
+            });
 
             req.user = user.toJSON();
         }
