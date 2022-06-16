@@ -1,6 +1,6 @@
 const { readdirSync } = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
-const { parent, server, owner, admin } = require('../config.json');
+const { server, owner, admin } = require('../config.json').bot;
 const Album = require('../models/album');
 
 const prefix = process.env.BOT_PREFIX || '!';
