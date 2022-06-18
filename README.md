@@ -3,7 +3,9 @@
 ![Banner](https://media.discordapp.net/attachments/946013429200723989/946013554472013884/banner.png)
 
 ![Version](https://img.shields.io/github/package-json/v/BayuDC/waifuseum?style=for-the-badge)
-![Status](https://img.shields.io/website.svg?url=https://api.waifuseum.my.id&style=for-the-badge&label=Status)
+![Status](https://img.shields.io/website.svg?url=https://api.waifuseum.my.id&style=for-the-badge&label=Server%201)
+![Status](https://img.shields.io/website.svg?url=https://api2.waifuseum.my.id&style=for-the-badge&label=Server%202)
+![Status](https://img.shields.io/website.svg?url=https://www.waifuseum.my.id&style=for-the-badge&label=Web)
 
 Waifuseum (Museum Waifu) is a simple REST API for storing and managing
 anime picture collection. This project use combinaton of ExpressJS,
@@ -28,9 +30,12 @@ The main drawback of this API is the file size limitation. Due to
 Discord rules, This API can't save files with size more than 8 mb.
 _Server Boost_ is needed to increase the maximum file size limit.
 
+## 📌 URLs
+- https://api.waifuseum.my.id or https://waifuseum.glitch.me
+- https://api2.waifuseum.my.id or https://waifuseum.alwaysdata.net
+
 ## 🔖 Endpoints
 
-Base url: https://api.waifuseum.my.id or https://waifuseum.glitch.me
 
 | Path                | Method | Body or Query                                      |
 | ------------------- | ------ | -------------------------------------------------- |
@@ -59,3 +64,7 @@ Base url: https://api.waifuseum.my.id or https://waifuseum.glitch.me
 | `/users`            | POST   | `{ name, email, password, abilities }`             |
 | `/users/<id>`       | PUT    | `{ name?, email?, abilities? }`                    |
 | `/users/<id>`       | DELETE | -                                                  |
+
+## 💡 Other Projects
+- 🎨 https://github.com/BayuDC/waifuseum-web
+- 🤖 https://github.com/BayuDC/waifuseum-assistant
