@@ -51,8 +51,8 @@ module.exports = {
         try {
             await User.findByIdAndUpdate(req.user.id, { token: '' });
 
-            res.clearCookie('access_token');
-            res.clearCookie('refresh_token');
+            res.clearCookie('access_token', { httpOnly: true, domain: config.domain });
+            res.clearCookie('refresh_token', { httpOnly: true, domain: config.domain });
 
             res.status(200).json({ message: 'Logout success' });
         } catch (err) {
