@@ -1,26 +1,23 @@
+const { writeFile } = require('fs/promises');
 const { MessageEmbed } = require('discord.js');
-const fs = require('fs/promises');
-const config = require('../config.json').bot;
+const config = require('../config.json');
 
 module.exports = {
     name: 'init',
-    owner: true,
     /** @param {import('discord.js').Message} message */
     async execute(message) {
-        config.server = message.guildId;
-        config.parent = message.channel.parentId;
+        config.bot.server = message.guildId;
+        config.bot.parent = message.channel.parentId;
 
-        await fs.writeFile('./config.json', JSON.stringify(config, null, 2), 'utf8');
+        const configStr = JSON.stringify(config, null, 2);
+
+        await writeFile('./config.json', configStr, 'utf8');
         await message.channel.send({
             embeds: [
                 new MessageEmbed({
                     color: '#36AE7C',
                     title: 'Initialized',
-                    description: `Initialized configuration to \`config.json\`\n\`\`\`${JSON.stringify(
-                        config,
-                        null,
-                        2
-                    )}\`\`\``,
+                    description: `Initialized configuration to \`config.json\`\n\`\`\`${configStr}\`\`\``,
                 }).setTimestamp(),
             ],
         });
