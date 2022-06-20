@@ -1,5 +1,8 @@
 {
-  "app": {},
+  "app": {
+    "domain": "localhost",
+    "origin": "http://localhost:1234"
+  },
   "bot": {
     "server": "937004089894658078",
     "parent": "988227910936719370",
