@@ -1,5 +1,5 @@
 const { readdirSync } = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Intents, MessageEmbed } = require('discord.js');
 const { server, owner, admin } = require('../config.json').bot;
 const Album = require('../models/album');
 
@@ -29,13 +29,28 @@ client.on('messageCreate', async message => {
         let command = args.shift().toLowerCase();
 
         command = client.commands.get(command);
-        if (!command) return message.channel.send('Command not found');
+        if (!command)
+            return message.channel.send({
+                embeds: [
+                    new MessageEmbed({
+                        description: ':x: Command not found',
+                        color: '#EB5353',
+                    }),
+                ],
+            });
 
         if (
             (command.owner && !message.member.roles.cache.has(owner)) ||
             (command.admin && !message.member.roles.cache.has(admin))
         ) {
-            return message.channel.send('You do not have permission to use this command');
+            return message.channel.send({
+                embeds: [
+                    new MessageEmbed({
+                        description: ':x: You do not have permission to use this command',
+                        color: '#EB5353',
+                    }),
+                ],
+            });
         }
 
         if (command.validations) {
@@ -50,7 +65,14 @@ client.on('messageCreate', async message => {
 
         await command.execute(message, ...args);
     } catch (error) {
-        await message.channel.send('Something went wrong');
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    color: '#EB5353',
+                    description: ':x: Something went wrong',
+                }),
+            ],
+        });
         console.log(error);
     }
 });
