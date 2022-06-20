@@ -1,11 +1,11 @@
 {
   "app": {
-    "domain": ".waifuseum.test",
-    "origin": "http://www.waifuseum.test"
+    "domain": "localhost",
+    "origin": "http://localhost:1234"
   },
   "bot": {
     "server": "937004089894658078",
-    "parent": "937004494066159656",
+    "parent": "988227910936719370",
     "owner": "958740357997269032",
     "admin": "958740897829363732",
     "worker": "958736892508135534"

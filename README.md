@@ -31,11 +31,12 @@ Discord rules, This API can't save files with size more than 8 mb.
 _Server Boost_ is needed to increase the maximum file size limit.
 
 ## 📌 URLs
-- https://api.waifuseum.my.id or https://waifuseum.glitch.me
-- https://api2.waifuseum.my.id or https://waifuseum.alwaysdata.net
+
+-   https://api.waifuseum.my.id or https://waifuseum.glitch.me
+-   https://api2.waifuseum.my.id or https://waifuseum.alwaysdata.net
+-   https://waifuseum.herokuapp.com (dev)
 
 ## 🔖 Endpoints
-
 
 | Path                | Method | Body or Query                                      |
 | ------------------- | ------ | -------------------------------------------------- |
@@ -65,6 +66,22 @@ _Server Boost_ is needed to increase the maximum file size limit.
 | `/users/<id>`       | PUT    | `{ name?, email?, abilities? }`                    |
 | `/users/<id>`       | DELETE | -                                                  |
 
+## Development
+
+Requirements: A Discord bot that has **Worker** role in Waifuseum Discord server
+
+```
+$ git clone https://github.com/BayuDC/waifuseum.git
+
+$ copy .env.example .env
+
+$ pnpm install
+
+$ pnpm dev
+
+```
+
 ## 💡 Other Projects
-- 🎨 https://github.com/BayuDC/waifuseum-web
-- 🤖 https://github.com/BayuDC/waifuseum-assistant
+
+-   🎨 https://github.com/BayuDC/waifuseum-web
+-   🤖 https://github.com/BayuDC/waifuseum-assistant
