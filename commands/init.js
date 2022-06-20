@@ -4,6 +4,7 @@ const config = require('../config.json');
 
 module.exports = {
     name: 'init',
+    owner: true,
     /** @param {import('discord.js').Message} message */
     async execute(message) {
         config.bot.server = message.guildId;

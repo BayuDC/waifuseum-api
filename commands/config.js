@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const fs = require('fs/promises');
-const config = require('../config.json').bot;
+const config = require('../config.json');
 
 module.exports = {
     name: 'config',
@@ -21,19 +21,19 @@ module.exports = {
 
         switch (key) {
             case 'server':
-                config.server = value;
+                config.bot.server = value;
                 break;
             case 'parent':
-                config.parent = value;
+                config.bot.parent = value;
                 break;
             case 'owner':
-                config.owner = value;
+                config.bot.owner = value;
                 break;
             case 'admin':
-                config.admin = value;
+                config.bot.admin = value;
                 break;
             case 'worker':
-                config.worker = value;
+                config.bot.worker = value;
                 break;
             default:
                 return await message.channel.send({
