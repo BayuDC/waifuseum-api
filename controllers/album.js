@@ -2,7 +2,7 @@ const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
 const Album = require('../models/album');
 const User = require('../models/user');
-const { worker: workerId, parent: parentId } = require('../config.json');
+const { worker: workerId, parent: parentId } = require('../config.json').app;
 
 module.exports = {
     /**
