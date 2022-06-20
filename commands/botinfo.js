@@ -8,7 +8,7 @@ module.exports = {
     async execute(message) {
         const client = message.client;
         const servers = client.guilds.cache.size.toLocaleString();
-        const users = client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString();
+        const users = client.guilds.cache.reduce((count, guild) => count + guild.memberCount, 0).toLocaleString();
         const channels = client.channels.cache.size.toLocaleString();
         await message.channel.send({
             embeds: [
