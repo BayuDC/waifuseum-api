@@ -7,6 +7,9 @@ module.exports = {
     /** @param {import('discord.js').Message} message */
     async execute(message) {
         const client = message.client;
+        const servers = client.guilds.cache.size.toLocaleString();
+        const users = client.guilds.cache.reduce((count, guild) => count + guild.memberCount, 0).toLocaleString();
+        const channels = client.channels.cache.size.toLocaleString();
         await message.channel.send({
             embeds: [
                 new MessageEmbed({
@@ -15,9 +18,7 @@ module.exports = {
                     title: `:robot: ${client.user.username} Information`,
                     description: `**❯ Client :** ${client.user.tag} (${client.user.id})\n**❯ Commands Total :** ${
                         client.commands.size
-                    }\n**❯ Server :** ${client.guilds.cache.size.toLocaleString()} Servers\n**❯ Users :** ${client.guilds.cache
-                        .reduce((a, b) => a + b.memberCount, 0)
-                        .toLocaleString()} Users\n**❯ Channels :** ${client.channels.cache.size.toLocaleString()} Channels\n**❯ Node.js :** ${
+                    }\n**❯ Server :** ${servers} servers\n**❯ Users :** ${users} users\n**❯ Channels :** ${channels} channels\n**❯ Node.js :** ${
                         process.version
                     }\n**❯ Project Version :** v${
                         project.version
