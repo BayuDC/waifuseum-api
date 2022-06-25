@@ -4,6 +4,8 @@ const schema = new mongoose.Schema(
     {
         url: { type: String, required: true },
         source: { type: String, required: false },
+        width: { type: Number, required: true },
+        height: { type: Number, required: true },
         messageId: { type: String, required: true },
         album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
         createdBy: { type: mongoose.mongo.ObjectId, ref: 'User', required: true },
@@ -56,6 +58,11 @@ schema.method('updateFile', async function (channel, { file, album }) {
     const message = await channel.send({ files: [file?.path || this.url] });
     await message.edit({ content: `\`${this.id}\`` });
 
+    const attachment = message.attachments.first();
+
+    this.url = attachment.url;
+    this.width = attachment.width;
+    this.height = attachment.height;
     this.messageId = message.id;
     this.album = album?._id || this.album;
 });
