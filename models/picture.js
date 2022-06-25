@@ -30,7 +30,7 @@ schema.static('findRandom', async function (query, { count, full }) {
 
     return pictures.map(picture => ({
         id: picture._id,
-        url: picture.url,
+        url: 'https://cdn.discordapp.com/attachments' + picture.url,
         source: picture.source,
         album: picture.album,
     }));
@@ -69,11 +69,12 @@ schema.method('updateFile', async function (channel, { file, album }) {
 
 schema.method('toJSON', function () {
     return {
-        ...{ id: this._id, url: this.url, source: this.source },
+        ...{ id: this._id, url: 'https://cdn.discordapp.com/attachments' + this.url, source: this.source },
         ...(this.album ? { album: this.album.toJSON() } : {}),
     };
 });
 schema.pre('save', function (next) {
+    this.url = this.url.replace('https://cdn.discordapp.com/attachments', '');
     this.updatedAt = Date.now();
     next();
 });
