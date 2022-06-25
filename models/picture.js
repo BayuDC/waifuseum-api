@@ -4,6 +4,8 @@ const schema = new mongoose.Schema(
     {
         url: { type: String, required: true },
         source: { type: String, required: false },
+        width: { type: Number, required: true },
+        height: { type: Number, required: true },
         messageId: { type: String, required: true },
         album: { type: mongoose.mongo.ObjectId, ref: 'Album', required: true },
         createdBy: { type: mongoose.mongo.ObjectId, ref: 'User', required: true },
@@ -28,7 +30,7 @@ schema.static('findRandom', async function (query, { count, full }) {
 
     return pictures.map(picture => ({
         id: picture._id,
-        url: picture.url,
+        url: 'https://cdn.discordapp.com/attachments' + picture.url,
         source: picture.source,
         album: picture.album,
     }));
@@ -56,17 +58,23 @@ schema.method('updateFile', async function (channel, { file, album }) {
     const message = await channel.send({ files: [file?.path || this.url] });
     await message.edit({ content: `\`${this.id}\`` });
 
+    const attachment = message.attachments.first();
+
+    this.url = attachment.url;
+    this.width = attachment.width;
+    this.height = attachment.height;
     this.messageId = message.id;
     this.album = album?._id || this.album;
 });
 
 schema.method('toJSON', function () {
     return {
-        ...{ id: this._id, url: this.url, source: this.source },
+        ...{ id: this._id, url: 'https://cdn.discordapp.com/attachments' + this.url, source: this.source },
         ...(this.album ? { album: this.album.toJSON() } : {}),
     };
 });
 schema.pre('save', function (next) {
+    this.url = this.url.replace('https://cdn.discordapp.com/attachments', '');
     this.updatedAt = Date.now();
     next();
 });

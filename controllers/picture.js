@@ -11,7 +11,6 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const user = req.user;
             const picture = await Picture.findById(id);
             if (!picture) throw createError(404, 'Picture not found');
 
@@ -98,8 +97,12 @@ module.exports = {
             const channel = req.app.data.channels.get(album.id);
             const message = await channel.send({ files: [file.path] });
 
+            const attachment = message.attachments.first();
+
             const picture = await Picture.create({
-                url: message.attachments.first().url,
+                url: attachment.url,
+                width: attachment.width,
+                height: attachment.height,
                 messageId: message.id,
                 createdBy: user.id,
                 album: album.id,
