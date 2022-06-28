@@ -8,7 +8,7 @@ module.exports = {
             .notEmpty()
             .withMessage('Current password is required')
             .custom(async (value, { req }) => {
-                req.user = await User.findById(req.user.id);
+                req.user = await User.findById(req.user.id).select('+password');
 
                 if (!(await req.user.comparePassword(value))) {
                     throw new Error('Current password is incorrect');

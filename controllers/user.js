@@ -11,7 +11,7 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const user = isValidObjectId(id) && (await User.findById(id));
+            const user = isValidObjectId(id) && (await User.findById(id).simple());
             if (!user) throw createError(404, 'User not found');
 
             req.data.user = user;
@@ -34,7 +34,7 @@ module.exports = {
      */
     async index(req, res) {
         const { full } = req.query;
-        const users = await (full ? User.find() : User.find().select('-abilities'));
+        const users = await (full ? User.find() : User.find().simple());
 
         res.json(users);
     },

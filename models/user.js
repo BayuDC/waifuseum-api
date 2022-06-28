@@ -6,10 +6,10 @@ const schema = new mongoose.Schema(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
+        password: { type: String, required: true, select: false },
         abilities: { type: Array, default: [] },
         discordId: { type: String },
-        token: { type: String },
+        token: { type: String, select: false },
     },
     {
         versionKey: false,
@@ -40,5 +40,9 @@ schema.pre('save', async function (next) {
 
     next();
 });
+
+schema.query.simple = function () {
+    return this.select(['name', 'email']);
+};
 
 module.exports = mongoose.model('User', schema);

@@ -15,7 +15,7 @@ module.exports = {
         try {
             const { email, password } = req.body;
 
-            const user = await User.findOne({ email });
+            const user = await User.findOne({ email }).select('+password +token');
             if (!user) throw createError(404, 'User not found');
 
             const auth = await user.comparePassword(password);
