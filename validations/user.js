@@ -5,8 +5,8 @@ const User = require('../models/user');
 module.exports = {
     index: validate([
         query('full')
-            .if(query('full').exists())
-            .customSanitizer(() => 1),
+            .optional()
+            .customSanitizer(() => true),
     ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),

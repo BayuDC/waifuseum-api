@@ -48,17 +48,20 @@ const guard = () => (req, res, next) => {
     if (!req.user) return next(createError.Unauthorized());
     next();
 };
-const gate = () => (req, res, next) => {
-    if (!req.data.access) return next(createError.Forbidden());
-    next();
+const gate =
+    (...gates) =>
+    (req, res, next) => {
+        gates.forEach(gate => gate(req, res));
+
+        if (req.data.access) return next();
+        next(createError.Forbidden());
+    };
+
+gate.can = ability => (req, res) => {
+    req.data.access ||= req.user.abilities.includes(ability);
 };
-const can = ability => (req, res, next) => {
-    req.data.access = req.data.access || req.user.abilities.includes(ability);
-    next();
-};
-const own = property => (req, res, next) => {
-    req.data.access = req.data.access || req.data[property]?.createdBy.toString() == req.user.id;
-    next();
+gate.own = property => (req, res) => {
+    req.data.access ||= req.data[property]?.createdBy.toString() == req.user.id;
 };
 
-module.exports = { auth, guard, gate, can, own };
+module.exports = { auth, guard, gate };

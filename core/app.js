@@ -19,10 +19,10 @@ app.use(auth());
 app.use((req, res, next) => ((req.data = {}), next()));
 app.use('/', require('../routes/main'));
 app.use('/auth', require('../routes/auth'));
-app.use('/profile', require('../routes/profile'));
+// app.use('/profile', require('../routes/profile'));
 app.use('/users', require('../routes/user'));
-app.use('/pictures', require('../routes/picture'));
-app.use('/albums', require('../routes/album'));
+// app.use('/pictures', require('../routes/picture'));
+// app.use('/albums', require('../routes/album'));
 
 app.use(error.notFound);
 app.use(error.handle);
