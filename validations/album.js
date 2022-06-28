@@ -4,10 +4,7 @@ const Album = require('../models/album');
 
 module.exports = {
     index: validate([
-        query('community')
-            .optional()
-            .customSanitizer(() => true),
-        query('private')
+        query('full')
             .optional()
             .customSanitizer(() => true),
     ]),

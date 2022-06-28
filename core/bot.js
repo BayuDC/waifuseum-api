@@ -81,13 +81,15 @@ module.exports = next => {
     client.once('ready', () => {
         console.log('Discord bot is ready!');
 
-        Album.find().then(albums => {
-            albums.forEach(album => {
-                client.channels.fetch(album.channelId).then(channel => {
-                    client.data.channels.set(album.id, channel);
+        Album.find()
+            .select('channelId')
+            .then(albums => {
+                albums.forEach(album => {
+                    client.channels.fetch(album.channelId).then(channel => {
+                        client.data.channels.set(album.id, channel);
+                    });
                 });
             });
-        });
         client.guilds.fetch(server).then(guild => (client.data.server = guild));
         client.user.setActivity({ type: 'PLAYING', name: 'with your waifu' });
 

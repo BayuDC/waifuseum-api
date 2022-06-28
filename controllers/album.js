@@ -38,12 +38,10 @@ module.exports = {
                 throw createError(403);
             }
 
-            res.json({
-                album: {
-                    ...album.toJSON(),
-                    picturesCount: await album.picturesCount,
-                },
-            });
+            await album.populate('picturesCount');
+            await album.populate('createdBy', 'name');
+
+            res.json({ album });
         } catch (err) {
             next(err);
         }
@@ -53,13 +51,10 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async index(req, res) {
-        const { community, private } = req.query;
+        const { full } = req.query;
+
         try {
-            const albums = await Album.find({
-                ...{ private: false },
-                ...(private && { private: true }),
-                ...(community && { community: true }),
-            }).sort({ createdAt: 'desc' });
+            const albums = await Album.find().setOptions({ full });
 
             res.json({ albums });
         } catch (err) {
@@ -71,13 +66,12 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async indexMine(req, res) {
-        const { community, private } = req.query;
+        const { full } = req.query;
+
         try {
             const albums = await Album.find({
-                ...{ createdBy: req.user.id },
-                ...(private && { private: true }),
-                ...(community && { community: true }),
-            }).sort({ createdAt: 'desc' });
+                createdBy: req.user.id,
+            }).setOptions({ full });
 
             res.json({ albums });
         } catch (err) {
@@ -89,8 +83,12 @@ module.exports = {
      * @param {import('express').Response} res
      */
     async indexAll(req, res) {
+        const { full } = req.query;
+
         try {
-            const albums = await Album.find().sort({ createdAt: 'desc' });
+            const albums = await Album.find().bypass().setOptions({
+                full,
+            });
 
             res.json({ albums });
         } catch (err) {
