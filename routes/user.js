@@ -6,10 +6,12 @@ const validation = require('../validations/user');
 
 router.param('id', controller.load);
 
-router.use(guard(), can('manage-user'), gate());
+router.use(guard(), gate(gate.can('manage-user')));
+
 router.get('/', validation.index, controller.index);
-router.get('/:id', controller.show);
 router.post('/', validation.store, controller.store);
+
+router.get('/:id', controller.show);
 router.put('/:id', validation.update, controller.update);
 router.delete('/:id', controller.destroy);
 
