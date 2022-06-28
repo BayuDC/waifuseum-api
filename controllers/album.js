@@ -49,12 +49,21 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async index(req, res) {
-        const { full } = req.query;
+    async index(req, res, next) {
+        const { full, filter, page, count } = req.query;
 
         try {
-            const albums = await Album.find().setOptions({ full });
+            if (filter == 'private') {
+                throw createError(406, 'Filter private is not working at here');
+            }
+
+            const albums = await Album.find({
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {
@@ -64,14 +73,19 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async indexMine(req, res) {
-        const { full } = req.query;
+    async indexMine(req, res, next) {
+        const { full, filter, page, count } = req.query;
 
         try {
             const albums = await Album.find({
                 createdBy: req.user.id,
-            }).setOptions({ full });
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count)
+                .bypass();
 
             res.json({ albums });
         } catch (err) {
@@ -81,14 +95,18 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async indexAll(req, res) {
-        const { full } = req.query;
+    async indexAll(req, res, next) {
+        const { full, filter, page, count } = req.query;
 
         try {
-            const albums = await Album.find().bypass().setOptions({
-                full,
-            });
+            const albums = await Album.find({
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count)
+                .bypass();
 
             res.json({ albums });
         } catch (err) {
