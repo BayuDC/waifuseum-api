@@ -4,8 +4,7 @@ const validate = require('../middlewares/validate');
 const Album = require('../models/album');
 
 const validateAlbum = async (value, { req }) => {
-    const isId = isMongoId(value);
-    const album = await Album.findOne(isId ? { _id: value } : { $or: [{ name: value }, { slug: value }] });
+    const album = await Album.findOne(isMongoId(value) ? { _id: value } : { slug: value });
 
     if (!album) throw Error('Album does not exist');
 
@@ -48,11 +47,11 @@ module.exports = {
             return true;
         }),
     ]),
-    update: [
+    update: validate([
         body('album').optional().custom(validateAlbum),
         body('source')
             .optional()
             .isURL({ protocols: ['http', 'https'] })
             .withMessage('Url is not valid'),
-    ],
+    ]),
 };

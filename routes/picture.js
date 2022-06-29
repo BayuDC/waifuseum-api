@@ -14,7 +14,7 @@ router.get('/:id', controller.show);
 router.use(guard());
 router.post('/', upload, download, validation.store, controller.store);
 
-router.use('/:id', gate(own('picture'), can('manage-picture')));
+router.use('/:id', gate(gate.own('picture'), gate.can('manage-picture')));
 
 router.put('/:id', upload, download, validation.update, controller.update);
 router.delete('/:id', controller.destroy);

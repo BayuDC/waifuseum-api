@@ -108,11 +108,10 @@ module.exports = {
                 album: album.id,
                 source,
             });
-            picture.album = album;
 
             await message.edit({ content: `\`${picture.id}\`` });
 
-            res.status(201).json({ picture: picture.toJSON() });
+            res.status(201).json({ picture });
         } catch (err) {
             if (err.name == 'AbortError') {
                 err = createError(422, 'Unprocessable file');
@@ -136,17 +135,27 @@ module.exports = {
         try {
             if (album || file) {
                 const channel = req.app.data.channels.get(album?.id || picture.album.id);
-                const message = await (album ? req.app.data.channels.get(picture.album.id) : channel).messages
+                const oldMessage = await (album ? req.app.data.channels.get(picture.album.id) : channel).messages
                     .fetch(picture.messageId)
                     .catch(() => {});
 
-                await picture.updateFile(channel, { file, album });
-                await message?.delete();
+                const newMessage = await channel.send({ files: [file?.path || picture.url] });
+                const attachment = newMessage.attachments.first();
+                await newMessage.edit({ content: `\`${picture.id}\`` });
+
+                picture.url = attachment.url;
+                picture.messageId = newMessage.id;
+                picture.width = attachment.width || picture.width;
+                picture.height = attachment.height || picture.height;
+                picture.album = album?.id || picture.album.id;
+
+                await oldMessage?.delete();
             }
 
-            await picture.update({ source });
+            picture.source = source || picture.source;
+            await picture.save();
 
-            res.json({ picture: picture.toJSON() });
+            res.json({ picture });
         } catch (err) {
             if (err.name == 'AbortError') {
                 err = createError(422, 'Unprocessable file');

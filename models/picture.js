@@ -30,7 +30,7 @@ schema.static('findRandom', async function (query, { count, full }) {
 
     return pictures.map(picture => ({
         id: picture._id,
-        url: 'https://cdn.discordapp.com/attachments' + picture.url,
+        url: picture.url,
         source: picture.source,
         album: picture.album,
     }));
@@ -48,33 +48,19 @@ schema.static('findAll', async function (query, { full, count, page }) {
 
     return pictures;
 });
-schema.method('update', async function (document) {
-    this.source = document.source || this.source;
-
-    await this.save();
-    await this.populate('album');
-});
-schema.method('updateFile', async function (channel, { file, album }) {
-    const message = await channel.send({ files: [file?.path || this.url] });
-    await message.edit({ content: `\`${this.id}\`` });
-
-    const attachment = message.attachments.first();
-
-    this.url = attachment.url;
-    this.width = attachment.width;
-    this.height = attachment.height;
-    this.messageId = message.id;
-    this.album = album?._id || this.album;
-});
 
 schema.method('toJSON', function () {
     return {
-        ...{ id: this._id, url: 'https://cdn.discordapp.com/attachments' + this.url, source: this.source },
-        ...(this.album ? { album: this.album.toJSON() } : {}),
+        id: this._id,
+        url: this.url,
+        source: this.source,
+        album: this.album,
+        createdBy: this.createdBy,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
     };
 });
 schema.pre('save', function (next) {
-    this.url = this.url.replace('https://cdn.discordapp.com/attachments', '');
     this.updatedAt = Date.now();
     next();
 });
