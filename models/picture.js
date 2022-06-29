@@ -17,38 +17,6 @@ const schema = new mongoose.Schema(
     }
 );
 
-schema.static('findRandom', async function (query, { count, full }) {
-    const pictures = await this.aggregate()
-        .match(query)
-        .sample(count || 1)
-        .project({
-            ...{ _id: true, url: true },
-            ...(full ? { source: true, album: true } : {}),
-        });
-
-    if (full) await this.populate(pictures, { path: 'album' });
-
-    return pictures.map(picture => ({
-        id: picture._id,
-        url: picture.url,
-        source: picture.source,
-        album: picture.album,
-    }));
-});
-schema.static('findAll', async function (query, { full, count, page }) {
-    const pictures = await this.find(query)
-        .select(full ? {} : { album: false, source: false })
-        .sort({ createdAt: 'desc' })
-        .skip(count * (page - 1))
-        .limit(count);
-
-    if (full) {
-        await this.populate(pictures, { path: 'album' });
-    }
-
-    return pictures;
-});
-
 schema.method('toJSON', function () {
     return {
         id: this._id,
@@ -59,6 +27,20 @@ schema.method('toJSON', function () {
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
     };
+});
+schema.pre('find', function (next) {
+    const { full } = this.getOptions();
+
+    if (full) {
+        this.populate('createdBy', 'name');
+        this.populate('album', ['name', 'slug']);
+    } else {
+        this.select(['url', 'source']);
+    }
+
+    this.sort({ createdAt: 'desc' });
+
+    next();
 });
 schema.pre('save', function (next) {
     this.updatedAt = Date.now();

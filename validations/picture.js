@@ -21,20 +21,11 @@ const validateAlbum = async (value, { req }) => {
 
 module.exports = {
     index: validate([
-        query('count').toInt(),
-        query('page').toInt(),
+        query('count').default(10).toInt(),
+        query('page').default(1).toInt(),
         query('full')
             .optional()
             .customSanitizer(() => true),
-        query('mine')
-            .optional()
-            .customSanitizer(() => true),
-        query('admin')
-            .optional()
-            .customSanitizer((_, { req }) => {
-                return req.user.abilities.includes('picture-admin');
-            }),
-        query('album').optional().custom(validateAlbum),
     ]),
     store: validate([
         body('source')

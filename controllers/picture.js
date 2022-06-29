@@ -49,20 +49,42 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async index(req, res, next) {
-        const { count, full, album, mine } = req.query;
+        const { full } = req.query;
+        try {
+            const albums = await Album.find({
+                $or: [{ private: false }, { createdBy: req.user?.id }],
+            }).bypass();
 
-        const albums = await Album.find({
-            ...{ private: false },
-            ...(album ? { _id: album.id } : {}),
-            ...(mine ? { createdBy: req.user.id } : {}),
-        });
-        const pictures = await Picture.findRandom(
-            { album: { $in: albums.map(album => album._id) } },
-            { count, full }
-            //
-        );
+            const pictures = await Picture.find({
+                album: { $in: albums.map(album => album._id) },
+            }).setOptions({ full });
 
-        res.json({ pictures });
+            res.json({ pictures });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async indexMine(req, res, next) {
+        const { full } = req.query;
+
+        try {
+            const albums = await Album.find({
+                createdBy: req.user?.id,
+            }).bypass();
+
+            const pictures = await Picture.find({
+                album: { $in: albums.map(album => album._id) },
+            }).setOptions({ full });
+
+            res.json({ pictures });
+        } catch (err) {
+            next(err);
+        }
     },
     /**
      * @param {import('express').Request} req
@@ -70,19 +92,19 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async indexAll(req, res, next) {
-        const { full, count, page, mine, album, admin } = req.query;
+        const { full } = req.query;
 
-        const albums = await Album.find({
-            ...(album ? { _id: album.id } : {}),
-            ...(!admin ? { private: false } : {}),
-            ...(mine ? { createdBy: req.user.id } : {}),
-        });
-        const pictures = await Picture.findAll(
-            { album: { $in: albums.map(album => album._id) } },
-            { full, count, page }
-        );
+        try {
+            const albums = await Album.find().bypass();
 
-        res.json({ pictures });
+            const pictures = await Picture.find({
+                album: { $in: albums.map(album => album._id) },
+            }).setOptions({ full });
+
+            res.json({ pictures });
+        } catch (err) {
+            next(err);
+        }
     },
     /**
      * @param {import('express').Request} req

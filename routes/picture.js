@@ -8,7 +8,8 @@ const { upload, download } = require('../middlewares/picture');
 router.param('id', controller.load);
 
 router.get('/', validation.index, controller.index);
-router.get('/all', validation.index, controller.indexAll);
+router.get('/mine', validation.index, controller.indexMine);
+router.get('/all', guard(), gate(gate.can('manage-picture')), validation.index, controller.indexAll);
 router.get('/:id', controller.show);
 
 router.use(guard());
