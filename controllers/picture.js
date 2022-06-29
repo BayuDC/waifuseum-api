@@ -49,10 +49,11 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async index(req, res, next) {
-        const { full, page, count } = req.query;
+        const { full, page, count, filter } = req.query;
         try {
             const albums = await Album.find({
                 $or: [{ private: false }, { createdBy: req.user?.id }],
+                [filter]: true,
             }).bypass();
 
             const pictures = await Picture.find({
@@ -72,11 +73,12 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async indexMine(req, res, next) {
-        const { full, page, count } = req.query;
+        const { full, page, count, filter } = req.query;
 
         try {
             const albums = await Album.find({
                 createdBy: req.user?.id,
+                [filter]: true,
             }).bypass();
 
             const pictures = await Picture.find({
@@ -96,10 +98,12 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async indexAll(req, res, next) {
-        const { full, page, count } = req.query;
+        const { full, page, count, filter } = req.query;
 
         try {
-            const albums = await Album.find().bypass();
+            const albums = await Album.find({
+                [filter]: true,
+            }).bypass();
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },
