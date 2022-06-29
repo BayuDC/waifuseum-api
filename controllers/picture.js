@@ -38,7 +38,7 @@ module.exports = {
                 throw createError(403);
             }
 
-            res.json({ picture: picture.toJSON() });
+            res.json({ picture: picture });
         } catch (err) {
             next(err);
         }
@@ -54,7 +54,7 @@ module.exports = {
             const albums = await Album.find({
                 $or: [{ private: false }, { createdBy: req.user?.id }],
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },
@@ -79,7 +79,7 @@ module.exports = {
             const albums = await Album.find({
                 createdBy: req.user?.id,
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },
@@ -103,7 +103,7 @@ module.exports = {
         try {
             const albums = await Album.find({
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },

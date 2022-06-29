@@ -55,11 +55,8 @@ module.exports = {
         const { full, filter, page, count } = req.query;
 
         try {
-            if (filter == 'private') {
-                throw createError(406, 'Filter private is not working at here');
-            }
-
             const albums = await Album.find({
+                $or: [{ private: false }, { createdBy: req.user?.id }],
                 [filter]: true,
             })
                 .setOptions({ full })
@@ -84,8 +81,7 @@ module.exports = {
                 [filter]: true,
             })
                 .setOptions({ full })
-                .paginate(page, count)
-                .bypass();
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {
@@ -105,8 +101,7 @@ module.exports = {
                 [filter]: true,
             })
                 .setOptions({ full })
-                .paginate(page, count)
-                .bypass();
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {

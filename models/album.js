@@ -29,9 +29,6 @@ schema.virtual('picturesCount', {
     count: true,
 });
 
-schema.query.bypass = function () {
-    return this.setOptions({ bypass: true });
-};
 schema.query.paginate = function (page, count) {
     return this.skip(count * (page - 1)).limit(count);
 };
@@ -50,9 +47,7 @@ schema.method('toJSON', function () {
     };
 });
 schema.pre('find', function (next) {
-    const { bypass, full } = this.getOptions();
-
-    if (!bypass) this.find({ private: false });
+    const { full } = this.getOptions();
 
     if (full) {
         this.populate('picturesCount');
