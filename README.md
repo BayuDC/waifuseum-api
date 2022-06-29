@@ -38,33 +38,34 @@ _Server Boost_ is needed to increase the maximum file size limit.
 
 ## 🔖 Endpoints
 
-| Path                | Method | Body or Query                                      |
-| ------------------- | ------ | -------------------------------------------------- |
-| `/`                 | GET    | -                                                  |
-| `/pictures`         | GET    | `?count` `?full` `?album` `?mine`                  |
-| `/pictures/all`     | GET    | `?count` `?full` `?album` `?mine` `?page` `?admin` |
-| `/pictures/<id>`    | GET    | -                                                  |
-| `/pictures`         | POST   | `{ file/fileUrl, album, source? }`                 |
-| `/pictures/<id>`    | PUT    | `{ file/fileUrl?, album?, source? }`               |
-| `/pictures/<id>`    | DELETE | -                                                  |
-| `/albums`           | GET    | `?full` `?filter` '?page' '?count'                 |
-| `/albums/mine`      | GET    | `?full` `?filter` '?page' '?count'                 |
-| `/albums/all`       | GET    | `?full` `?filter` '?page' '?count'                 |
-| `/albums/<id>`      | GET    | -                                                  |
-| `/albums`           | POST   | `{ name, slug?, private?, community? }`            |
-| `/albums/<id>`      | PUT    | `{ name?, slug?, private?, community? }`           |
-| `/albums/<id>`      | DELETE | -                                                  |
-| `/auth`             | GET    | -                                                  |
-| `/auth/me`          | GET    | -                                                  |
-| `/auth/login`       | POST   | `{ email, password }`                              |
-| `/auth/logout`      | POST   | -                                                  |
-| `/profile`          | GET    | -                                                  |
-| `/profile/password` | PATCH  | `{ oldPassword, newPassword }`                     |
-| `/users`            | GET    | `?full`                                            |
-| `/users/<id>`       | GET    | -                                                  |
-| `/users`            | POST   | `{ name, email, password, abilities }`             |
-| `/users/<id>`       | PUT    | `{ name?, email?, abilities? }`                    |
-| `/users/<id>`       | DELETE | -                                                  |
+| Path                | Method | Body or Query                            |
+| ------------------- | ------ | ---------------------------------------- |
+| `/`                 | GET    | -                                        |
+| `/pictures`         | GET    | `?full` `?filter` '?page' '?count'       |
+| `/pictures/mine`    | GET    | `?full` `?filter` '?page' '?count'       |
+| `/pictures/all`     | GET    | `?full` `?filter` '?page' '?count'       |
+| `/pictures/<id>`    | GET    | -                                        |
+| `/pictures`         | POST   | `{ file/fileUrl, album, source? }`       |
+| `/pictures/<id>`    | PUT    | `{ file/fileUrl?, album?, source? }`     |
+| `/pictures/<id>`    | DELETE | -                                        |
+| `/albums`           | GET    | `?full` `?filter` '?page' '?count'       |
+| `/albums/mine`      | GET    | `?full` `?filter` '?page' '?count'       |
+| `/albums/all`       | GET    | `?full` `?filter` '?page' '?count'       |
+| `/albums/<id>`      | GET    | -                                        |
+| `/albums`           | POST   | `{ name, slug?, private?, community? }`  |
+| `/albums/<id>`      | PUT    | `{ name?, slug?, private?, community? }` |
+| `/albums/<id>`      | DELETE | -                                        |
+| `/auth`             | GET    | -                                        |
+| `/auth/me`          | GET    | -                                        |
+| `/auth/login`       | POST   | `{ email, password }`                    |
+| `/auth/logout`      | POST   | -                                        |
+| `/profile`          | GET    | -                                        |
+| `/profile/password` | PATCH  | `{ oldPassword, newPassword }`           |
+| `/users`            | GET    | `?full`                                  |
+| `/users/<id>`       | GET    | -                                        |
+| `/users`            | POST   | `{ name, email, password, abilities }`   |
+| `/users/<id>`       | PUT    | `{ name?, email?, abilities? }`          |
+| `/users/<id>`       | DELETE | -                                        |
 
 ## Development
 
