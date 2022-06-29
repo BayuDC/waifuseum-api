@@ -47,9 +47,9 @@ _Server Boost_ is needed to increase the maximum file size limit.
 | `/pictures`         | POST   | `{ file/fileUrl, album, source? }`                 |
 | `/pictures/<id>`    | PUT    | `{ file/fileUrl?, album?, source? }`               |
 | `/pictures/<id>`    | DELETE | -                                                  |
-| `/albums`           | GET    | `?community` `?private`                            |
-| `/albums/mine`      | GET    | `?community` `?private`                            |
-| `/albums/all`       | GET    | -                                                  |
+| `/albums`           | GET    | `?full` `?filter` '?page' '?count'                 |
+| `/albums/mine`      | GET    | `?full` `?filter` '?page' '?count'                 |
+| `/albums/all`       | GET    | `?full` `?filter` '?page' '?count'                 |
 | `/albums/<id>`      | GET    | -                                                  |
 | `/albums`           | POST   | `{ name, slug?, private?, community? }`            |
 | `/albums/<id>`      | PUT    | `{ name?, slug?, private?, community? }`           |

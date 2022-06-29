@@ -38,12 +38,10 @@ module.exports = {
                 throw createError(403);
             }
 
-            res.json({
-                album: {
-                    ...album.toJSON(),
-                    picturesCount: await album.picturesCount,
-                },
-            });
+            await album.populate('picturesCount');
+            await album.populate('createdBy', 'name');
+
+            res.json({ album });
         } catch (err) {
             next(err);
         }
@@ -51,15 +49,21 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async index(req, res) {
-        const { community, private } = req.query;
+    async index(req, res, next) {
+        const { full, filter, page, count } = req.query;
+
         try {
+            if (filter == 'private') {
+                throw createError(406, 'Filter private is not working at here');
+            }
+
             const albums = await Album.find({
-                ...{ private: false },
-                ...(private && { private: true }),
-                ...(community && { community: true }),
-            }).sort({ createdAt: 'desc' });
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {
@@ -69,15 +73,19 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async indexMine(req, res) {
-        const { community, private } = req.query;
+    async indexMine(req, res, next) {
+        const { full, filter, page, count } = req.query;
+
         try {
             const albums = await Album.find({
-                ...{ createdBy: req.user.id },
-                ...(private && { private: true }),
-                ...(community && { community: true }),
-            }).sort({ createdAt: 'desc' });
+                createdBy: req.user.id,
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count)
+                .bypass();
 
             res.json({ albums });
         } catch (err) {
@@ -87,10 +95,18 @@ module.exports = {
     /**
      * @param {import('express').Request} req
      * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
      */
-    async indexAll(req, res) {
+    async indexAll(req, res, next) {
+        const { full, filter, page, count } = req.query;
+
         try {
-            const albums = await Album.find().sort({ createdAt: 'desc' });
+            const albums = await Album.find({
+                [filter]: true,
+            })
+                .setOptions({ full })
+                .paginate(page, count)
+                .bypass();
 
             res.json({ albums });
         } catch (err) {

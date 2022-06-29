@@ -4,12 +4,15 @@ const Album = require('../models/album');
 
 module.exports = {
     index: validate([
-        query('community')
+        query('full')
             .optional()
             .customSanitizer(() => true),
-        query('private')
+        query('filter')
             .optional()
-            .customSanitizer(() => true),
+            .matches(/^(private|community)$/)
+            .withMessage('Unknown filter option'),
+        query('count').default(10).toInt(),
+        query('page').default(1).toInt(),
     ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),

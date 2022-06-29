@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Picture = require('./picture');
 
 const schema = new mongoose.Schema(
     {
@@ -7,7 +8,6 @@ const schema = new mongoose.Schema(
         private: { type: Boolean, default: false },
         community: { type: Boolean, default: false },
         channelId: { type: String, required: true },
-        pictures: [{ type: mongoose.mongo.ObjectId, ref: 'Picture' }],
         createdBy: { type: mongoose.mongo.ObjectId, ref: 'User' },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
@@ -16,9 +16,25 @@ const schema = new mongoose.Schema(
         versionKey: false,
     }
 );
-schema.virtual('picturesCount').get(async function () {
-    return await this.model('Picture').countDocuments({ album: this._id });
+
+schema.virtual('pictures', {
+    ref: Picture,
+    localField: '_id',
+    foreignField: 'album',
 });
+schema.virtual('picturesCount', {
+    ref: Picture,
+    localField: '_id',
+    foreignField: 'album',
+    count: true,
+});
+
+schema.query.bypass = function () {
+    return this.setOptions({ bypass: true });
+};
+schema.query.paginate = function (page, count) {
+    return this.skip(count * (page - 1)).limit(count);
+};
 
 schema.method('toJSON', function () {
     return {
@@ -27,7 +43,27 @@ schema.method('toJSON', function () {
         slug: this.slug,
         private: this.private,
         community: this.community,
+        picturesCount: this.picturesCount,
+        createdBy: this.createdBy,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
     };
+});
+schema.pre('find', function (next) {
+    const { bypass, full } = this.getOptions();
+
+    if (!bypass) this.find({ private: false });
+
+    if (full) {
+        this.populate('picturesCount');
+        this.populate('createdBy', 'name');
+    } else {
+        this.select(['name', 'slug']);
+    }
+
+    this.sort({ createdAt: 'desc' });
+
+    next();
 });
 schema.pre('save', function (next) {
     this.updatedAt = Date.now();

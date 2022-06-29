@@ -13,7 +13,7 @@ const auth = () => async (req, res, next) => {
             req.user = jwt.verify(accessToken, secret);
         } else if (refreshToken) {
             const payload = jwt.verify(refreshToken, secret);
-            const user = await User.findOne({ token: payload.secret });
+            const user = await User.findOne({ token: payload.secret }).select('+token');
 
             if (!user) throw undefined;
 
