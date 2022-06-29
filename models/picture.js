@@ -17,6 +17,10 @@ const schema = new mongoose.Schema(
     }
 );
 
+schema.query.paginate = function (page, count) {
+    return this.skip(count * (page - 1)).limit(count);
+};
+
 schema.method('toJSON', function () {
     return {
         id: this._id,
