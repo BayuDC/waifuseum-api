@@ -8,7 +8,7 @@ router.param('id', controller.load);
 
 router.get('/', validation.index, controller.index);
 router.get('/mine', guard(), validation.index, controller.indexMine);
-router.get('/all', guard(), gate(gate.can('manage-album')), controller.indexAll);
+router.get('/all', guard(), gate(gate.can('manage-album')), validation.index, controller.indexAll);
 router.get('/:id', controller.show);
 
 router.use(guard());

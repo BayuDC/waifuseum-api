@@ -4,8 +4,7 @@ const validate = require('../middlewares/validate');
 const Album = require('../models/album');
 
 const validateAlbum = async (value, { req }) => {
-    const isId = isMongoId(value);
-    const album = await Album.findOne(isId ? { _id: value } : { $or: [{ name: value }, { slug: value }] });
+    const album = await Album.findOne(isMongoId(value) ? { _id: value } : { slug: value });
 
     if (!album) throw Error('Album does not exist');
 
@@ -22,20 +21,11 @@ const validateAlbum = async (value, { req }) => {
 
 module.exports = {
     index: validate([
-        query('count').toInt(),
-        query('page').toInt(),
+        query('count').default(10).toInt(),
+        query('page').default(1).toInt(),
         query('full')
             .optional()
             .customSanitizer(() => true),
-        query('mine')
-            .optional()
-            .customSanitizer(() => true),
-        query('admin')
-            .optional()
-            .customSanitizer((_, { req }) => {
-                return req.user.abilities.includes('picture-admin');
-            }),
-        query('album').optional().custom(validateAlbum),
     ]),
     store: validate([
         body('source')
@@ -48,11 +38,11 @@ module.exports = {
             return true;
         }),
     ]),
-    update: [
+    update: validate([
         body('album').optional().custom(validateAlbum),
         body('source')
             .optional()
             .isURL({ protocols: ['http', 'https'] })
             .withMessage('Url is not valid'),
-    ],
+    ]),
 };
