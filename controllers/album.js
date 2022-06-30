@@ -30,14 +30,6 @@ module.exports = {
     async show(req, res, next) {
         const { album } = req.data;
         try {
-            if (
-                album.private &&
-                album.createdBy.toString() != req.user.id &&
-                !req.user.abilities.includes('manage-album')
-            ) {
-                throw createError(403);
-            }
-
             await album.populate('picturesCount');
             await album.populate('createdBy', 'name');
 

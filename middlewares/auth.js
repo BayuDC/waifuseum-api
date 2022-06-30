@@ -51,17 +51,32 @@ const guard = () => (req, res, next) => {
 const gate =
     (...gates) =>
     (req, res, next) => {
-        gates.forEach(gate => gate(req, res));
+        gates.forEach(gate => {
+            gate(req, res);
+        });
 
         if (req.data.access) return next();
         next(createError.Forbidden());
     };
 
-gate.can = ability => (req, res) => {
-    req.data.access ||= req.user.abilities.includes(ability);
-};
-gate.own = property => (req, res) => {
-    req.data.access ||= req.data[property]?.createdBy.toString() == req.user.id;
+const gateIf =
+    (fn, ...gates) =>
+    (req, res, next) => {
+        if (!fn(req.data)) return next();
+
+        gate(...gates)(req, res, next);
+    };
+const check = {
+    can(ability) {
+        return (req, res) => {
+            req.data.access ||= req.user?.abilities.includes(ability);
+        };
+    },
+    own(property) {
+        return (req, res) => {
+            req.data.access ||= req.data[property]?.createdBy.toString() == req.user?.id;
+        };
+    },
 };
 
-module.exports = { auth, guard, gate };
+module.exports = { auth, guard, gate, gateIf, check };
