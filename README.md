@@ -1,4 +1,4 @@
-# Waifuseum
+-title# Waifuseum
 
 ![Banner](https://media.discordapp.net/attachments/946013429200723989/946013554472013884/banner.png)
 
@@ -41,18 +41,18 @@ _Server Boost_ is needed to increase the maximum file size limit.
 | Path                    | Method | Body or Query                            |
 | ----------------------- | ------ | ---------------------------------------- |
 | `/`                     | GET    | -                                        |
-| `/pictures`             | GET    | `?full` `?filter` '?page' '?count'       |
-| `/pictures/mine`        | GET    | `?full` `?filter` '?page' '?count'       |
-| `/pictures/all`         | GET    | `?full` `?filter` '?page' '?count'       |
+| `/pictures`             | GET    | `?full` `?filter` `?page` `?count`       |
+| `/pictures/mine`        | GET    | `?full` `?filter` `?page` `?count`       |
+| `/pictures/all`         | GET    | `?full` `?filter` `?page` `?count`       |
 | `/pictures/<id>`        | GET    | -                                        |
 | `/pictures`             | POST   | `{ file/fileUrl, album, source? }`       |
 | `/pictures/<id>`        | PUT    | `{ file/fileUrl?, album?, source? }`     |
 | `/pictures/<id>`        | DELETE | -                                        |
-| `/albums`               | GET    | `?full` `?filter` '?page' '?count'       |
-| `/albums/mine`          | GET    | `?full` `?filter` '?page' '?count'       |
-| `/albums/all`           | GET    | `?full` `?filter` '?page' '?count'       |
+| `/albums`               | GET    | `?full` `?filter` `?page` `?count`       |
+| `/albums/mine`          | GET    | `?full` `?filter` `?page` `?count`       |
+| `/albums/all`           | GET    | `?full` `?filter` `?page` `?count`       |
 | `/albums/<id>`          | GET    | -                                        |
-| `/albums/<id>/pictures` | GET    | `?full` '?page' '?count'                 |
+| `/albums/<id>/pictures` | GET    | `?full` `?page` `?count`                 |
 | `/albums`               | POST   | `{ name, slug?, private?, community? }`  |
 | `/albums/<id>`          | PUT    | `{ name?, slug?, private?, community? }` |
 | `/albums/<id>`          | DELETE | -                                        |
