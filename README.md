@@ -1,4 +1,4 @@
--title# Waifuseum
+# Waifuseum
 
 ![Banner](https://media.discordapp.net/attachments/946013429200723989/946013554472013884/banner.png)
 
