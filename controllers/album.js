@@ -45,12 +45,15 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async showPics(req, res, next) {
+        const { full, page, count } = req.query;
         const { album } = req.data;
 
         try {
             const pictures = await Picture.find({
                 album: album._id,
-            });
+            })
+                .setOptions({ full })
+                .paginate(page, count);
 
             res.json({ pictures });
         } catch (err) {
