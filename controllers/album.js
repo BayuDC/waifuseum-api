@@ -1,5 +1,6 @@
 const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
+const Picture = require('../models/picture');
 const Album = require('../models/album');
 const User = require('../models/user');
 const { worker: workerId, parent: parentId } = require('../config.json').bot;
@@ -34,6 +35,24 @@ module.exports = {
             await album.populate('createdBy', 'name');
 
             res.json({ album });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async showPics(req, res, next) {
+        const { album } = req.data;
+
+        try {
+            const pictures = await Picture.find({
+                album: album._id,
+            });
+
+            res.json({ pictures });
         } catch (err) {
             next(err);
         }

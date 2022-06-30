@@ -12,7 +12,7 @@ router.get('/all', guard(), gate(check.can('manage-album')), validation.index, c
 
 router.get('/:id*', [gateIf(({ album }) => album.private, check.own('album'), check.can('manage-album'))]);
 router.get('/:id', controller.show);
-router.get('/:id/pictures', controller.show);
+router.get('/:id/pictures', controller.showPics);
 
 router.use(guard());
 router.post('/', validation.store, controller.store);
