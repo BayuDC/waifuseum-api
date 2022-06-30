@@ -1,12 +1,12 @@
 const router = require('express').Router();
-const { guard, gate, can } = require('../middlewares/auth');
+const { guard, gate, check } = require('../middlewares/auth');
 
 const controller = require('../controllers/user');
 const validation = require('../validations/user');
 
 router.param('id', controller.load);
 
-router.use(guard(), gate(gate.can('manage-user')));
+router.use(guard(), gate(check.can('manage-user')));
 
 router.get('/', validation.index, controller.index);
 router.post('/', validation.store, controller.store);

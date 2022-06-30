@@ -11,12 +11,10 @@ module.exports = {
      */
     async load(req, res, next, id) {
         try {
-            const picture = await Picture.findById(id);
+            const picture = await Picture.findById(id).populate('album', ['name', 'slug', 'private']);
             if (!picture) throw createError(404, 'Picture not found');
 
-            await picture.populate('album');
             req.data.picture = picture;
-
             next();
         } catch (err) {
             next(err);
@@ -30,15 +28,7 @@ module.exports = {
     async show(req, res, next) {
         const { picture } = req.data;
         try {
-            if (
-                picture.album.private &&
-                picture.createdBy.toString() != req.user.id &&
-                !req.user.abilities.includes('manage-album')
-            ) {
-                throw createError(403);
-            }
-
-            res.json({ picture: picture.toJSON() });
+            res.json({ picture: picture });
         } catch (err) {
             next(err);
         }
@@ -54,7 +44,7 @@ module.exports = {
             const albums = await Album.find({
                 $or: [{ private: false }, { createdBy: req.user?.id }],
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },
@@ -79,7 +69,7 @@ module.exports = {
             const albums = await Album.find({
                 createdBy: req.user?.id,
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },
@@ -103,7 +93,7 @@ module.exports = {
         try {
             const albums = await Album.find({
                 [filter]: true,
-            }).bypass();
+            });
 
             const pictures = await Picture.find({
                 album: { $in: albums.map(album => album._id) },

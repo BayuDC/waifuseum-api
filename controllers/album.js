@@ -1,5 +1,6 @@
 const { isValidObjectId } = require('mongoose');
 const createError = require('http-errors');
+const Picture = require('../models/picture');
 const Album = require('../models/album');
 const User = require('../models/user');
 const { worker: workerId, parent: parentId } = require('../config.json').bot;
@@ -30,14 +31,6 @@ module.exports = {
     async show(req, res, next) {
         const { album } = req.data;
         try {
-            if (
-                album.private &&
-                album.createdBy.toString() != req.user.id &&
-                !req.user.abilities.includes('manage-album')
-            ) {
-                throw createError(403);
-            }
-
             await album.populate('picturesCount');
             await album.populate('createdBy', 'name');
 
@@ -51,15 +44,33 @@ module.exports = {
      * @param {import('express').Response} res
      * @param {import('express').NextFunction} next
      */
+    async showPics(req, res, next) {
+        const { full, page, count } = req.query;
+        const { album } = req.data;
+
+        try {
+            const pictures = await Picture.find({
+                album: album._id,
+            })
+                .setOptions({ full })
+                .paginate(page, count);
+
+            res.json({ pictures });
+        } catch (err) {
+            next(err);
+        }
+    },
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
     async index(req, res, next) {
         const { full, filter, page, count } = req.query;
 
         try {
-            if (filter == 'private') {
-                throw createError(406, 'Filter private is not working at here');
-            }
-
             const albums = await Album.find({
+                $or: [{ private: false }, { createdBy: req.user?.id }],
                 [filter]: true,
             })
                 .setOptions({ full })
@@ -84,8 +95,7 @@ module.exports = {
                 [filter]: true,
             })
                 .setOptions({ full })
-                .paginate(page, count)
-                .bypass();
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {
@@ -105,8 +115,7 @@ module.exports = {
                 [filter]: true,
             })
                 .setOptions({ full })
-                .paginate(page, count)
-                .bypass();
+                .paginate(page, count);
 
             res.json({ albums });
         } catch (err) {

@@ -14,6 +14,13 @@ module.exports = {
         query('count').default(10).toInt(),
         query('page').default(1).toInt(),
     ]),
+    showPics: validate([
+        query('full')
+            .optional()
+            .customSanitizer(() => true),
+        query('count').default(10).toInt(),
+        query('page').default(1).toInt(),
+    ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
         body('slug')
