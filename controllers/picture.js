@@ -132,6 +132,7 @@ module.exports = {
             });
 
             await message.edit({ content: `\`${picture.id}\`` });
+            await album.save();
 
             res.status(201).json({ picture });
         } catch (err) {
