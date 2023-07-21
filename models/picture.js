@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema(
     {
         url: { type: String, required: true },
+        urls: {
+            base: { type: String, required: true },
+            minimal: { type: String },
+            standard: { type: String },
+        },
         source: { type: String, required: false },
         width: { type: Number, required: true },
         height: { type: Number, required: true },
@@ -26,7 +31,12 @@ schema.method('toJSON', function () {
     return {
         id: this._id,
         url: this.url,
-        urls: this.urls,
+        urls: {
+            thumbnail: 'coming soon',
+            minimal: this.urls.base + this.urls.minimal,
+            standard: this.urls.base + this.urls.standard,
+            original: this.urls.base,
+        },
         source: this.source,
         album: this.album,
         createdBy: this.createdBy,
@@ -41,7 +51,7 @@ schema.pre('find', function (next) {
         this.populate('createdBy', 'name');
         this.populate('album', ['name', 'slug']);
     } else {
-        this.select(['url', 'source', 'width', 'height']);
+        this.select(['url', 'urls', 'source']);
     }
 
     this.sort({ createdAt: 'desc' });
@@ -49,11 +59,15 @@ schema.pre('find', function (next) {
     next();
 });
 schema.pre('save', function (next) {
+    this.urls.minimal = this.generateSize(600);
+    this.urls.standard = this.generateSize(1200);
+
     this.updatedAt = Date.now();
+
     next();
 });
 
-schema.method('compress', function (target) {
+schema.method('generateSize', function (target) {
     if (target > this.width && target > this.height) return '';
 
     const width = this.width >= this.height ? target : Math.floor((target * this.width) / this.height);
@@ -62,13 +76,4 @@ schema.method('compress', function (target) {
     return `?width=${width}&height=${height}`;
 });
 
-schema.virtual('urls').get(function () {
-    const url = this.url.replace('cdn.discordapp.com', 'media.discordapp.net');
-    return {
-        original: url,
-        thumbnail: 'coming soon',
-        minimal: `${url}${this.compress(600)}`,
-        standard: `${url}${this.compress(1200)}`,
-    };
-});
 module.exports = mongoose.model('Picture', schema);

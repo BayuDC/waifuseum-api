@@ -123,6 +123,9 @@ module.exports = {
 
             const picture = await Picture.create({
                 url: attachment.url,
+                urls: {
+                    base: attachment.proxyURL,
+                },
                 width: attachment.width,
                 height: attachment.height,
                 messageId: message.id,
@@ -167,6 +170,9 @@ module.exports = {
                 await newMessage.edit({ content: `\`${picture.id}\`` });
 
                 picture.url = attachment.url;
+                picture.urls = {
+                    base: attachment.proxyURL,
+                };
                 picture.messageId = newMessage.id;
                 picture.width = attachment.width || picture.width;
                 picture.height = attachment.height || picture.height;
