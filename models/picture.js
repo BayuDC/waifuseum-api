@@ -14,6 +14,7 @@ const schema = new mongoose.Schema(
     },
     {
         versionKey: false,
+        toJSON: { virtuals: true },
     }
 );
 
@@ -25,6 +26,7 @@ schema.method('toJSON', function () {
     return {
         id: this._id,
         url: this.url,
+        urls: this.urls,
         source: this.source,
         album: this.album,
         createdBy: this.createdBy,
@@ -39,7 +41,7 @@ schema.pre('find', function (next) {
         this.populate('createdBy', 'name');
         this.populate('album', ['name', 'slug']);
     } else {
-        this.select(['url', 'source']);
+        this.select(['url', 'source', 'width', 'height']);
     }
 
     this.sort({ createdAt: 'desc' });
@@ -51,4 +53,22 @@ schema.pre('save', function (next) {
     next();
 });
 
+schema.method('compress', function (target) {
+    if (target > this.width && target > this.height) return '';
+
+    const width = this.width >= this.height ? target : Math.floor((target * this.width) / this.height);
+    const height = this.height >= this.width ? target : Math.floor((target * this.height) / this.width);
+
+    return `?width=${width}&height=${height}`;
+});
+
+schema.virtual('urls').get(function () {
+    const url = this.url.replace('cdn.discordapp.com', 'media.discordapp.net');
+    return {
+        original: url,
+        thumbnail: 'coming soon',
+        minimal: `${url}${this.compress(600)}`,
+        standard: `${url}${this.compress(1200)}`,
+    };
+});
 module.exports = mongoose.model('Picture', schema);
