@@ -5,6 +5,7 @@ const schema = new mongoose.Schema(
         url: { type: String, required: true },
         urls: {
             base: { type: String, required: true },
+            thumbnail: { type: String },
             minimal: { type: String },
             standard: { type: String },
         },
@@ -32,7 +33,7 @@ schema.method('toJSON', function () {
         id: this._id,
         url: this.url,
         urls: {
-            thumbnail: 'coming soon',
+            thumbnail: this.urls.base + this.urls.thumbnail,
             minimal: this.urls.base + this.urls.minimal,
             standard: this.urls.base + this.urls.standard,
             original: this.urls.base,
@@ -59,6 +60,7 @@ schema.pre('find', function (next) {
     next();
 });
 schema.pre('save', function (next) {
+    this.urls.thumbnail = this.generateSize(300);
     this.urls.minimal = this.generateSize(600);
     this.urls.standard = this.generateSize(1200);
 
@@ -70,8 +72,8 @@ schema.pre('save', function (next) {
 schema.method('generateSize', function (target) {
     if (target > this.width && target > this.height) return '';
 
-    const width = this.width >= this.height ? target : Math.floor((target * this.width) / this.height);
-    const height = this.height >= this.width ? target : Math.floor((target * this.height) / this.width);
+    const width = this.width <= this.height ? target : Math.floor((target * this.width) / this.height);
+    const height = this.height <= this.width ? target : Math.floor((target * this.height) / this.width);
 
     return `?width=${width}&height=${height}`;
 });
