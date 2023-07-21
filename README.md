@@ -3,9 +3,7 @@
 ![Banner](https://media.discordapp.net/attachments/946013429200723989/946013554472013884/banner.png)
 
 ![Version](https://img.shields.io/github/package-json/v/BayuDC/waifuseum?style=for-the-badge)
-![Status](https://img.shields.io/website.svg?url=https://api.waifuseum.my.id&style=for-the-badge&label=Server%201)
-![Status](https://img.shields.io/website.svg?url=https://api2.waifuseum.my.id&style=for-the-badge&label=Server%202)
-![Status](https://img.shields.io/website.svg?url=https://www.waifuseum.my.id&style=for-the-badge&label=Web)
+![Status](https://img.shields.io/website.svg?url=https://api.waifuseum.bayudc.fun&style=for-the-badge&label=Status)
 
 Waifuseum (Museum Waifu) is a simple REST API for storing and managing
 anime picture collection. This project use combinaton of ExpressJS,
@@ -18,25 +16,33 @@ it. Btw, this project is inspired by
 [Waifu.pics](https://github.com/Waifu-pics/waifu-api) and
 [Nekos.life](https://github.com/Nekos-life/nekos-dot-life).
 
-#### ⚙️ How it works
+#### 💡 How it works
 
 1. User upload the picture file to the http endpoint
-2. This thing send the file to Discord server via discord bot
-3. This thing save the url(obtained from discord bot) to database
+2. The program send the file to Discord server via discord bot
+3. The program save the url(obtained from discord bot) to database
+
+Very simple right?
+
+#### 📦 How are they stored
+
+The logic is album as channel then picture as message.
+
+![Discord Server](https://media.discordapp.net/attachments/946013429200723989/1131976837522792569/image.png)
+
+Join my discord server if you want to see it.
+Here is the link: https://discord.gg/8sSfCNCXHW.
 
 #### ⛔ Limitations
 
-The main drawback of this API is the file size limitation. Due to
+~~The main drawback of this API is the file size limitation. Due to
 Discord rules, This API can't save files with size more than 8 mb.
-_Server Boost_ is needed to increase the maximum file size limit.
+_Server Boost_ is needed to increase the maximum file size limit.~~
+The limit increased to 25mb now! It's more than enough to store 4K image files.
 
-## 📌 URLs
+## 🔖 API Docs
 
--   https://api.waifuseum.my.id or https://waifuseum.glitch.me
--   https://api2.waifuseum.my.id or https://waifuseum.alwaysdata.net
--   https://waifuseum.herokuapp.com (dev)
-
-## 🔖 Endpoints
+Base URL: https://api.waifuseum.bayudc.fun
 
 | Path                    | Method | Body or Query                            |
 | ----------------------- | ------ | ---------------------------------------- |
@@ -68,22 +74,15 @@ _Server Boost_ is needed to increase the maximum file size limit.
 | `/users/<id>`           | PUT    | `{ name?, email?, abilities? }`          |
 | `/users/<id>`           | DELETE | -                                        |
 
-## Development
+Sorry i am too lazy to make Swagger UI.
+
+## 🚧 Development
 
 Requirements: A Discord bot that has **Worker** role in Waifuseum Discord server
 
 ```
 $ git clone https://github.com/BayuDC/waifuseum.git
-
 $ copy .env.example .env
-
 $ pnpm install
-
 $ pnpm dev
-
 ```
-
-## 💡 Other Projects
-
--   🎨 https://github.com/BayuDC/waifuseum-web
--   🤖 https://github.com/BayuDC/waifuseum-assistant
