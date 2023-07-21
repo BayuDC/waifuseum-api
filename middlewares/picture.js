@@ -5,7 +5,7 @@ const axios = require('axios');
 const multer = require('multer');
 const createError = require('http-errors');
 
-const size = 8 * 1024 * 1024;
+const size = 25 * 1024 * 1024;
 const formats = { 'image/jpeg': 'jpg', 'image/png': 'png' };
 
 const handleError = (err, next) => {
