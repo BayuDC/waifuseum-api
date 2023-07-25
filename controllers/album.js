@@ -129,13 +129,16 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, slug, private, community } = req.body;
+        const { name, alias, description, slug, private, community } = req.body;
 
         try {
             /** @type {import('discord.js').Guild} guild */
             const guild = req.app.data.server;
             /** @type {import('discord.js').TextChannel} channel */
-            const channel = await guild.channels.create('🌸・' + slug, { parent: parentId });
+            const channel = await guild.channels.create('🌸・' + slug, {
+                parent: parentId,
+                topic: `${alias}${alias && description ? '・' : ''}${description}`,
+            });
 
             if (private && !community) {
                 const ownerId = (await User.findById(req.user.id)).discordId;
@@ -152,6 +155,8 @@ module.exports = {
 
             const album = await Album.create({
                 name,
+                alias,
+                description,
                 slug,
                 private: community ? false : private,
                 community,
@@ -173,20 +178,21 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
-        const { name, slug } = req.body;
+        const { name, alias, description, slug } = req.body;
         let { album } = req.data;
 
         try {
-            album = await Album.findByIdAndUpdate(album.id, { name, slug }, { new: true });
+            album = await Album.findByIdAndUpdate(album.id, { name, alias, description, slug }, { new: true });
+            const channel = await req.app.data.channels.get(album.id);
 
             if (slug) {
-                const channel = await req.app.data.channels.get(album.id);
                 await channel.setName('🌸・' + slug);
             }
+            if (alias || description) {
+                await channel.setTopic(`${alias}${alias && description ? '・' : ''}${description}`);
+            }
 
-            res.json({
-                album: album.toJSON(),
-            });
+            res.json({ album: album.toJSON() });
         } catch (err) {
             next(err);
         }
