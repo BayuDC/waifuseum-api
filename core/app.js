@@ -23,6 +23,7 @@ app.use('/profile', require('../routes/profile'));
 app.use('/users', require('../routes/user'));
 app.use('/pictures', require('../routes/picture'));
 app.use('/albums', require('../routes/album'));
+app.use('/tags', require('../routes/tag'));
 
 app.use(error.notFound);
 app.use(error.handle);
