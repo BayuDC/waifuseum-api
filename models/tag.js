@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
     alias: { type: String },
     description: { type: String },
     slug: { type: String, required: true, unique: true },
+    createdBy: { type: mongoose.mongo.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });
@@ -16,6 +17,7 @@ schema.method('toJSON', function () {
         alias: this.alias,
         description: this.description,
         slug: this.slug,
+        createdBy: this.createdBy,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
     };
@@ -24,7 +26,9 @@ schema.method('toJSON', function () {
 schema.pre('find', function (next) {
     const { full } = this.getOptions();
 
-    if (!full) {
+    if (full) {
+        this.populate('createdBy', 'name');
+    } else {
         this.select({ name: 1, slug: 1 });
     }
 

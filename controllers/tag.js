@@ -15,6 +15,7 @@ module.exports = {
             const tag = isValidObjectId(id) && (await Tag.findById(id));
             if (!tag) throw createError(404, 'Tag not found');
 
+            await tag.populate('createdBy', 'name');
             req.data.tag = tag;
             next();
         } catch (err) {
@@ -57,8 +58,10 @@ module.exports = {
                 slug,
                 alias,
                 description,
+                createdBy: req.user.id,
             });
 
+            await tag.populate('createdBy', 'name');
             res.status(201).json({
                 tag: tag.toJSON(),
             });
