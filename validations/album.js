@@ -1,6 +1,8 @@
 const { check, body, query } = require('express-validator');
+const { isMongoId } = require('validator').default;
 const validate = require('../middlewares/validate');
 const Album = require('../models/album');
+const Tag = require('../models/tag');
 
 module.exports = {
     index: validate([
@@ -48,6 +50,18 @@ module.exports = {
         }),
         body('private').optional().toBoolean(),
         body('community').optional().toBoolean(),
+        body('tags.*')
+            .optional()
+            .isString()
+            .custom(async (value, { req, path }) => {
+                const tag = await Tag.findOne(isMongoId(value) ? { _id: value } : { slug: value });
+
+                if (!tag) throw Error('Tag does not exist');
+
+                check(path)
+                    .customSanitizer(() => tag._id)
+                    .run(req);
+            }),
     ]),
     update: validate([
         body('name').optional().trim(),
@@ -75,5 +89,18 @@ module.exports = {
                 .customSanitizer(() => value)
                 .run(req);
         }),
+
+        body('tags.*')
+            .optional()
+            .isString()
+            .custom(async (value, { req, path }) => {
+                const tag = await Tag.findOne(isMongoId(value) ? { _id: value } : { slug: value });
+
+                if (!tag) throw Error('Tag does not exist');
+
+                check(path)
+                    .customSanitizer(() => tag._id)
+                    .run(req);
+            }),
     ]),
 };

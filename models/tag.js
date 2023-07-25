@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
     alias: { type: String },
     description: { type: String },
     slug: { type: String, required: true, unique: true },
+    albums: [{ type: mongoose.mongo.ObjectId, ref: 'Album' }],
     createdBy: { type: mongoose.mongo.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },

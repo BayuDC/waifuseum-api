@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const Picture = require('../models/picture');
 const Album = require('../models/album');
 const User = require('../models/user');
+const Tag = require('../models/tag');
 const { worker: workerId, parent: parentId } = require('../config.json').bot;
 
 module.exports = {
@@ -33,6 +34,7 @@ module.exports = {
         try {
             await album.populate('picturesCount');
             await album.populate('createdBy', 'name');
+            await album.populate('tags', ['name', 'slug']);
 
             res.json({ album });
         } catch (err) {
@@ -129,7 +131,7 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async store(req, res, next) {
-        const { name, alias, description, slug, private, community } = req.body;
+        const { name, alias, description, slug, private, community, tags } = req.body;
 
         try {
             /** @type {import('discord.js').Guild} guild */
@@ -160,9 +162,11 @@ module.exports = {
                 slug,
                 private: community ? false : private,
                 community,
+                tags,
                 channelId: channel.id,
                 createdBy: req.user.id,
             });
+            await album.syncTags();
             req.app.data.channels.set(album.id, channel);
 
             res.status(201).json({
@@ -178,12 +182,13 @@ module.exports = {
      * @param {import('express').NextFunction} next
      */
     async update(req, res, next) {
-        const { name, alias, description, slug } = req.body;
+        const { name, alias, description, slug, tags } = req.body;
         let { album } = req.data;
 
         try {
-            album = await Album.findByIdAndUpdate(album.id, { name, alias, description, slug }, { new: true });
+            album = await Album.findByIdAndUpdate(album.id, { name, alias, description, slug, tags }, { new: true });
             const channel = await req.app.data.channels.get(album.id);
+            await album.syncTags();
 
             if (slug) {
                 await channel.setName('🌸・' + slug);
@@ -212,6 +217,7 @@ module.exports = {
 
             const channel = await req.app.data.channels.get(album.id);
 
+            await Tag.updateMany({ _id: { $in: album.tags } }, { $pull: { albums: album.id } });
             await Album.findByIdAndDelete(album.id);
             await channel?.delete();
 
