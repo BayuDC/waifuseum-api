@@ -23,8 +23,8 @@ module.exports = {
     ]),
     store: validate([
         body('name').notEmpty().withMessage('Name is required').trim(),
-        body('alias').trim(),
-        body('description').trim(),
+        body('alias').optional().trim(),
+        body('description').optional().trim(),
         body('slug')
             .trim()
             .optional()
@@ -51,8 +51,8 @@ module.exports = {
     ]),
     update: validate([
         body('name').optional().trim(),
-        body('alias').trim(),
-        body('description').trim(),
+        body('alias').optional().trim(),
+        body('description').optional().trim(),
         body('slug')
             .trim()
             .optional()
