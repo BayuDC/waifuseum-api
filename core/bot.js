@@ -2,7 +2,7 @@ const { Client, Collection } = require('discord.js');
 const { server } = require('../config.json').bot;
 const Album = require('../models/album');
 
-const token = process.env.BOT_TOKEN;
+const token = process.env.DISCORD_BOT_TOKEN;
 
 const client = new Client({
     intents: ['GUILDS', 'GUILD_MESSAGES'],

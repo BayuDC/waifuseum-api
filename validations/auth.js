@@ -6,4 +6,5 @@ module.exports = {
         body('email').notEmpty().withMessage('Email is required'),
         body('password').notEmpty().withMessage('Password is required'),
     ]),
+    loginDiscord: validate([body('code').notEmpty().withMessage('Discord code is required')]),
 };
