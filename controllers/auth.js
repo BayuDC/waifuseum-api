@@ -75,11 +75,26 @@ module.exports = {
                 },
             });
 
-            res.status(201).json({
-                message: 'Login success',
-                discordUser,
-                code,
+            const user = await User.findOne({ discordId: discordUser.id }).select('+token');
+            if (!user) throw createError(404, 'User not found');
+
+            const token = await user.generateToken();
+
+            const accessToken = jwt.sign(user.toJSON(), secret, { expiresIn: '1h' });
+            const refreshToken = jwt.sign({ secret: token }, secret, { expiresIn: '7d' });
+
+            res.cookie('access_token', accessToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 1,
+                domain: config.domain,
             });
+            res.cookie('refresh_token', refreshToken, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7,
+                domain: config.domain,
+            });
+
+            res.status(201).json({ message: 'Login success' });
         } catch {
             next(createError(401, 'Login failed'));
         }
