@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs');
 const schema = new mongoose.Schema(
     {
         name: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true, select: false },
+        email: { type: String, unique: true },
+        password: { type: String, select: false },
         abilities: { type: Array, default: [] },
         discordId: { type: String },
         token: { type: String, select: false },
