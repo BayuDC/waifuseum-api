@@ -75,8 +75,13 @@ module.exports = {
                 },
             });
 
-            const user = await User.findOne({ discordId: discordUser.id }).select('+token');
-            if (!user) throw createError(404, 'User not found');
+            let user = await User.findOne({ discordId: discordUser.id }).select('+token');
+            if (!user) {
+                user = await User.create({
+                    name: discordUser.username,
+                    discordId: discordUser.id,
+                });
+            }
 
             const token = await user.generateToken();
 
