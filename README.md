@@ -1,9 +1,8 @@
-# Waifuseum
+# WaifuseumAPI
 
 ![Banner](https://media.discordapp.net/attachments/946013429200723989/946013554472013884/banner.png)
 
-![Version](https://img.shields.io/github/package-json/v/BayuDC/waifuseum?style=for-the-badge)
-![Status](https://img.shields.io/website.svg?url=https://api.waifuseum.bayudc.fun&style=for-the-badge&label=Status)
+> This project is slowly migrating to: https://github.com/BayuDC/waifuseum-next. Why? so many bad code.
 
 Waifuseum (Museum Waifu) is a simple REST API for storing and managing
 anime picture collection. This project use combinaton of ExpressJS,
@@ -42,7 +41,7 @@ The limit increased to 25mb now! It's more than enough to store 4K image files.
 
 ## 🔖 API Docs
 
-Base URL: https://api.waifuseum.bayudc.fun
+Base URL: https://api.waifuseum.art
 
 | Path                    | Method | Body or Query                            |
 | ----------------------- | ------ | ---------------------------------------- |
