@@ -79,6 +79,7 @@ module.exports = {
             if (!user) {
                 user = await User.create({
                     name: discordUser.username,
+                    email: `${discordUser.username}@waifuseum.art`,
                     discordId: discordUser.id,
                 });
             }
